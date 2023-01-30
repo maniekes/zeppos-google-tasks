@@ -1,5 +1,50 @@
+import {GOOGLE_API} from "../utils/constants";
+
 AppSettingsPage({
-  build(props) {
-    return Section({})
-  },
+    state: {
+        test: 'dupa',
+        auth: {
+            "access_token": "ya29.a0AVvZVsr3ax5gcithlrdT2bOabixC6OGGVRwNakjkpx2rBXVi4vh-Dqy8LA-NoToi4fFVy2chTUFNd9v0B3_qKKdVeOCDU-N96unHffiN5mjFIXM50agMKv-yX3WfqxjvSgIq_ahUlpSt_-GRgpQVcDsPmx2uaCgYKAWwSARMSFQGbdwaISsMEbkesi57dyczIP6DtnA0163",
+            "expires_in": 3599,
+            "refresh_token": "1//0cJ9K5qzylH4ICgYIARAAGAwSNwF-L9Irqi2p7Q3b3NyS3eFhUvKPez_68EtTO4v1n3W8qSUAlmCgXiJlhEQX0pq1JDkBV1fvqMc",
+            "scope": "https://www.googleapis.com/auth/tasks",
+            "token_type": "Bearer",
+        },
+        props: {}
+    },
+    setState(props) {
+        this.state.props = props;
+    },
+
+    build(props) {
+        this.setState(props);
+        const txt = Text({}, this.state.props.settingsStorage.getItem('test'))
+        const auth = Auth({
+            label: 'Click here to authorize',
+            authorizeUrl: 'https://accounts.google.com/o/oauth2/v2/auth',
+            requestTokenUrl: 'https://oauth2.googleapis.com/token',
+            clientId: GOOGLE_API.clientId,
+            clientSecret: GOOGLE_API.clientSecret,
+            scope: GOOGLE_API.scope,
+            oAuthParams: {
+                access_type: 'offline',
+                ...GOOGLE_API.redirectUri && {redirect_uri: GOOGLE_API.redirectUri},
+                ...GOOGLE_API.forceAsk && {prompt: 'consent'}
+            },
+            onAccessToken: (token) => {
+                let d = new Date();
+                d.setTime(d.getTime() + token.expires_in * 1000)
+                token.requeste_date = new Date()
+                token.expiry_date = d
+                this.state.props.settingsStorage.setItem('tokenAuth', token)
+                this.state.props.settingsStorage.setItem('test', JSON.stringify(token, null, 2))
+                console.log(props)
+            },
+            // onReturn: (a) => {
+            //     this.state.props.settingsStorage.setItem('test', JSON.stringify(a))
+            //     console.log(props)
+            // }
+        });
+        return Section({}, [auth, txt])
+    },
 })
