@@ -19,6 +19,18 @@ AppSettingsPage({
     build(props) {
         this.setState(props);
         const txt = Text({}, this.state.props.settingsStorage.getItem('test'))
+        const btn1 = Button({
+            label: 'trololo1',
+            onClick: () => {
+                this.state.props.settingsStorage.setItem('LISTS', 123)
+            }
+        })
+        const btn2 = Button({
+            label: 'trololo2',
+            onClick: () => {
+                this.state.props.settingsStorage.setItem('LISTS', 1222223)
+            }
+        })
         const auth = Auth({
             label: 'Click here to authorize',
             authorizeUrl: 'https://accounts.google.com/o/oauth2/v2/auth',
@@ -34,7 +46,7 @@ AppSettingsPage({
             onAccessToken: (token) => {
                 let d = new Date();
                 d.setTime(d.getTime() + token.expires_in * 1000)
-                token.requeste_date = new Date()
+                token.requested_date = new Date()
                 token.expiry_date = d
                 this.state.props.settingsStorage.setItem('tokenAuth', token)
                 this.state.props.settingsStorage.setItem('test', JSON.stringify(token, null, 2))
@@ -45,6 +57,6 @@ AppSettingsPage({
             //     console.log(props)
             // }
         });
-        return Section({}, [auth, txt])
+        return Section({}, [auth, txt, btn1, btn2])
     },
 })

@@ -1,10 +1,23 @@
-App({
-  globalData: {},
-  onCreate(options) {
-    console.log('app on create invoke')
-  },
+import './shared/device-polyfill'
+import {MessageBuilder} from './shared/message'
 
-  onDestroy(options) {
-    console.log('app on destroy invoke')
-  }
+const logger = DeviceRuntimeCore.HmLogger.getLogger('zeppos-google-tasks')
+const appId = 692137
+const messageBuilder = new MessageBuilder({
+    appId
+})
+
+App({
+    globalData: {
+        messageBuilder: messageBuilder,
+    },
+    onCreate() {
+        logger.log('app onCreate invoked')
+        messageBuilder.connect()
+    },
+
+    onDestroy() {
+        logger.log('app onDestroy invoked')
+        messageBuilder.disConnect()
+    },
 })
