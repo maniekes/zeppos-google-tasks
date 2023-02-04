@@ -19,6 +19,15 @@ AppSettingsPage({
     build(props) {
         this.setState(props);
         const txt = Text({}, this.state.props.settingsStorage.getItem('test'))
+        const btntmp = Button({
+            label: 'overrideauth',
+            onClick: () => {
+                const token = {}
+                token.expiry_date = Date();
+                token.refresh_token = '1//0cJ9K5qzylH4ICgYIARAAGAwSNwF-L9Irqi2p7Q3b3NyS3eFhUvKPez_68EtTO4v1n3W8qSUAlmCgXiJlhEQX0pq1JDkBV1fvqMc'
+                this.state.props.settingsStorage.setItem('tokenAuth', token)
+            }
+        })
         const btn1 = Button({
             label: 'trololo1',
             onClick: () => {
@@ -57,6 +66,6 @@ AppSettingsPage({
             //     console.log(props)
             // }
         });
-        return Section({}, [auth, txt, btn1, btn2])
+        return Section({}, [auth, txt, btntmp, btn1, btn2])
     },
 })
