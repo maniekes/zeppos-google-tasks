@@ -26,7 +26,7 @@ AppSettingsPage({
             label: 'overrideauth',
             onClick: () => {
                 const token = {}
-                token.expiry_date = Date();
+                token.expiry_date = new Date().toISOString();
                 token.refresh_token = '1//0c_AZX_xMOVwuCgYIARAAGAwSNwF-L9IrKGXxrPevLuy2yWN7sEkaSy4KCjAj643vp4dQP22dHhi_g9Zzhm4Wyp56KCKivDJoo3g'
                 this.state.props.settingsStorage.setItem('tokenAuth', JSON.stringify(token))
             }

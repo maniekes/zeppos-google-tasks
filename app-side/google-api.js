@@ -30,7 +30,8 @@ const getAuthToken = async () => {
     console.info('token from settings:')
     console.info(authToken)
     settings.settingsStorage.setItem('result3', 'calling getAuthToken0')
-    if (!(authToken?.expiry_date > Date())) {
+    if (authToken.expiry_date === null || authToken.expiry_date < new Date().toISOString()) {
+        console.log(`refreshing tocken because ${authToken?.expiry_date} and ${Date()}`)
         return await refreshToken()
     }
     settings.settingsStorage.setItem('result3', 'calling getAuthToken5')
