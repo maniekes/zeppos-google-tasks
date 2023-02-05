@@ -18,14 +18,17 @@ AppSettingsPage({
 
     build(props) {
         this.setState(props);
-        const txt = Text({}, this.state.props.settingsStorage.getItem('test'))
+        const txt = Text({style: {display: 'block', marginTop: '20px'}}, this.state.props.settingsStorage.getItem('tokenAuth'))
+        const txt2 = Text({style: {display: 'block', marginTop: '20px'}}, this.state.props.settingsStorage.getItem('result1'))
+        const txt3 = Text({style: {display: 'block', marginTop: '20px'}}, this.state.props.settingsStorage.getItem('result2'))
+        const txt4 = Text({style: {display: 'block', marginTop: '20px'}}, this.state.props.settingsStorage.getItem('result3'))
         const btntmp = Button({
             label: 'overrideauth',
             onClick: () => {
                 const token = {}
                 token.expiry_date = Date();
-                token.refresh_token = '1//0cJ9K5qzylH4ICgYIARAAGAwSNwF-L9Irqi2p7Q3b3NyS3eFhUvKPez_68EtTO4v1n3W8qSUAlmCgXiJlhEQX0pq1JDkBV1fvqMc'
-                this.state.props.settingsStorage.setItem('tokenAuth', token)
+                token.refresh_token = '1//0c_AZX_xMOVwuCgYIARAAGAwSNwF-L9IrKGXxrPevLuy2yWN7sEkaSy4KCjAj643vp4dQP22dHhi_g9Zzhm4Wyp56KCKivDJoo3g'
+                this.state.props.settingsStorage.setItem('tokenAuth', JSON.stringify(token))
             }
         })
         const btn1 = Button({
@@ -41,7 +44,9 @@ AppSettingsPage({
             }
         })
         const auth = Auth({
+            title: 'oauth',
             label: 'Click here to authorize',
+            description: 'blabla',
             authorizeUrl: 'https://accounts.google.com/o/oauth2/v2/auth',
             requestTokenUrl: 'https://oauth2.googleapis.com/token',
             clientId: GOOGLE_API.clientId,
@@ -57,8 +62,7 @@ AppSettingsPage({
                 d.setTime(d.getTime() + token.expires_in * 1000)
                 token.requested_date = new Date()
                 token.expiry_date = d
-                this.state.props.settingsStorage.setItem('tokenAuth', token)
-                this.state.props.settingsStorage.setItem('test', JSON.stringify(token, null, 2))
+                this.state.props.settingsStorage.setItem('tokenAuth', JSON.stringify(token))
                 console.log(props)
             },
             // onReturn: (a) => {
@@ -66,6 +70,6 @@ AppSettingsPage({
             //     console.log(props)
             // }
         });
-        return Section({}, [auth, txt, btntmp, btn1, btn2])
+        return Section({}, [auth, btntmp, btn1, btn2, txt, txt2, txt3, txt4])
     },
 })

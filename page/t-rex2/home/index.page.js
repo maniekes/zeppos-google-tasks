@@ -1,18 +1,13 @@
-import {TEXT_STYLE} from './index.style'
+import {TODO_MSG} from "../../../utils/constants";
+
+const {messageBuilder} = getApp()._options.globalData
 
 const logger = DeviceRuntimeCore.HmLogger.getLogger('helloworld')
-const dataList = [
-    {name: 'a', age: 12, like: 2},
-    {name: 'b', age: 13, like: 3},
-    {name: 'c', age: 13, like: 4}
-]
+const dataList = [{name: 'a', age: 12, like: 2}, {name: 'b', age: 13, like: 3}, {name: 'c', age: 13, like: 4}]
 
 function updateList(list, dataArray) {
-    console.log(4)
     list.setProperty(hmUI.prop.UPDATE_DATA, {
-        data_array: dataArray,
-        data_count: dataArray.length,
-        //Refresh the data and stay on the current page. If it is not set or set to 0, it will return to the top of the list.
+        data_array: dataArray, data_count: dataArray.length,
         on_page: 1
     })
 }
@@ -24,19 +19,16 @@ function initList(dataArray) {
         h: 404,
         w: 430,
         item_space: 10,
-        item_config: [
-            {
-                type_id: 1,
-                item_bg_color: 0xef5350,
-                item_bg_radius: 10,
-                text_view: [
-                    {x: 0, y: 0, w: 200, h: 20, key: 'name', color: 0xffffff, text_size: 20},
-                    {x: 0, y: 20, w: 50, h: 20, key: 'age', color: 0xffffff}
-                ],
-                text_view_count: 2,
-                item_height: 40
-            }
-        ],
+        item_config: [{
+            type_id: 1,
+            item_bg_color: 0xef5350,
+            item_bg_radius: 20,
+            text_view: [{x: 0, y: 0, w: 200, h: 20, key: 'title', color: 0xffffff, text_size: 20}, {
+                x: 0, y: 20, w: 200, h: 20, key: 'etag', color: 0xffffff
+            }],
+            text_view_count: 2,
+            item_height: 80
+        }],
         item_config_count: 1,
         data_array: dataArray,
         data_count: dataArray.length,
@@ -46,8 +38,20 @@ function initList(dataArray) {
 }
 
 function scrollListItemClick(list, index) {
-    dataList.push({name: 'd', age: 14, like: 6})
-    updateList(list, dataList)
+    logger.info('item clickedg')
+    messageBuilder.request({
+        method: TODO_MSG.GET_LISTS
+    }).then(({result}) => {
+        if (result.error || result === 'ERROR') {
+            hmUI.showToast({
+                text: 'error'
+            })
+            logger.info(JSON.stringify(result))
+        } else {
+            logger.info(JSON.stringify(result))
+            updateList(list, result.items)
+        }
+    }).catch((err) => logger.error(err))
 }
 
 
@@ -55,7 +59,6 @@ Page({
     build() {
         logger.debug('page build invoked')
         const l = initList(dataList)
-        hmUI.createWidget()
     },
 
     onInit() {

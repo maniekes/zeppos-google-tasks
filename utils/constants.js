@@ -7,3 +7,11 @@ export const GOOGLE_API = {
     // redirectUri: 'https://zepp-os-staging.zepp.com/app-settings/redirect.html',
     forceAsk: true
 }
+
+export const TODO_MSG = {
+    GET_LISTS: 'GET_LISTS',
+    GET_TASKS_FOR_LIST: 'GET_TASKS_FOR_LIST'
+}
+
+export const TODO_LISTS_FILE = 'fs_todo_lists'
+export const TODO_LISTS_TASKS_FILE_PREFIX = 'fs_todo_lists_'
