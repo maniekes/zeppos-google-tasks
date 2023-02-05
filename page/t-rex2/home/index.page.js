@@ -14,19 +14,19 @@ function updateList(list, dataArray) {
 
 function initList(dataArray) {
     return hmUI.createWidget(hmUI.widget.SCROLL_LIST, {
-        x: 10,
-        y: 50,
-        h: 404,
-        w: 430,
+        x: 0,
+        y: 0,
+        h: px(454),
+        w: px(454),
         item_space: 10,
         item_config: [{
             type_id: 1,
             item_bg_color: 0xef5350,
             item_bg_radius: 20,
-            text_view: [{x: 0, y: 0, w: 200, h: 20, key: 'title', color: 0xffffff, text_size: 20}, {
-                x: 0, y: 20, w: 200, h: 20, key: 'etag', color: 0xffffff
-            }],
-            text_view_count: 2,
+            text_view: [{x: 10, y: 10, w: 410, h: 40, key: 'title', color: 0xffffff, text_size: 30}
+                // ,{x: 0, y: 40, w: 200, h: 20, key: 'etag', color: 0xffffff}
+            ],
+            text_view_count: 1,
             item_height: 80
         }],
         item_config_count: 1,
