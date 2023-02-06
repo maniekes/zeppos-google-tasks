@@ -3,7 +3,7 @@ import {TODO_MSG} from "../../../utils/constants";
 const {messageBuilder} = getApp()._options.globalData
 
 const logger = DeviceRuntimeCore.HmLogger.getLogger('helloworld')
-const dataList = [{name: 'a', age: 12, like: 2}, {name: 'b', age: 13, like: 3}, {name: 'c', age: 13, like: 4}]
+const dataList = [{title: 'loading'}]
 
 function updateList(list, dataArray) {
     list.setProperty(hmUI.prop.UPDATE_DATA, {
@@ -15,15 +15,15 @@ function updateList(list, dataArray) {
 function initList(dataArray) {
     return hmUI.createWidget(hmUI.widget.SCROLL_LIST, {
         x: 0,
-        y: 0,
+        y: 40,
         h: px(454),
         w: px(454),
-        item_space: 10,
+        item_space: 30,
         item_config: [{
             type_id: 1,
-            item_bg_color: 0xef5350,
+            item_bg_color: 0x333333,
             item_bg_radius: 20,
-            text_view: [{x: 10, y: 10, w: 410, h: 40, key: 'title', color: 0xffffff, text_size: 30}
+            text_view: [{x: 0, y: 15, w: 454, h: 40, key: 'title', color: 0xffffff, text_size: 30}
                 // ,{x: 0, y: 40, w: 200, h: 20, key: 'etag', color: 0xffffff}
             ],
             text_view_count: 1,
@@ -59,6 +59,7 @@ Page({
     build() {
         logger.debug('page build invoked')
         const l = initList(dataList)
+        scrollListItemClick(l,0)
     },
 
     onInit() {
