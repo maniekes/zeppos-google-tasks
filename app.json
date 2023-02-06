@@ -26,7 +26,8 @@
       "module": {
         "page": {
           "pages": [
-            "page/t-rex2/home/index.page"
+            "page/t-rex2/home/tasks.page",
+            "page/t-rex2/home/lists.page"
           ],
           "window": {
             "navigationBarBackgroundColor": "#ffffff",
