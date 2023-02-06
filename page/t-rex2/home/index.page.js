@@ -18,7 +18,7 @@ function initList(dataArray) {
         y: 40,
         h: px(454),
         w: px(454),
-        item_space: 30,
+        item_space: 20,
         item_config: [{
             type_id: 1,
             item_bg_color: 0x333333,
