@@ -1,17 +1,72 @@
 import {TODO_MSG} from "../../../utils/constants";
+import {readListsFromFile, writeListsToFile} from "../../../utils/fs";
 
 const {messageBuilder} = getApp()._options.globalData
 
-const logger = DeviceRuntimeCore.HmLogger.getLogger('helloworld')
+const logger = DeviceRuntimeCore.HmLogger.getLogger('zeppos-google-tasks')
 
 Page({
     state: {
-        items: [{title: 'loading'}], list: null
-    }, updateList() {
+        items: [{title: 'loading'}],
+        list: null,
+        title: null,
+        savedLists: {}
+    },
+
+    onInit() {
+        logger.debug('page onInit invoked')
+        this.state.savedLists = readListsFromFile()
+        if (this.state.savedLists.items) {
+            logger.debug('prepopulating list from cache')
+            this.state.items = this.state.savedLists.items
+        }
+    },
+
+    build() {
+        logger.debug('page build invoked')
+        this.state.title = this.initTitle()
+        this.state.list = this.initList()
+        this.fetchLists()
+    },
+
+    onDestroy() {
+        logger.debug('page onDestroy invoked')
+    },
+
+    updateList() {
         this.state.list.setProperty(hmUI.prop.UPDATE_DATA, {
             data_array: this.state.items, data_count: this.state.items.length, on_page: 1
         })
-    }, initList() {
+    },
+
+    fetchLists() {
+        messageBuilder.request({
+            method: TODO_MSG.GET_LISTS
+        }).then(({result}) => {
+            if (result.error || result === 'ERROR') {
+                hmUI.showToast({
+                    text: 'error'
+                })
+                logger.info(JSON.stringify(result))
+            } else {
+                logger.info(JSON.stringify(result))
+                this.state.savedLists.items = result.items
+                this.state.items = result.items
+                this.updateList()
+                writeListsToFile(this.state.savedLists)
+            }
+        }).catch((err) => logger.error(err))
+    },
+
+    scrollListItemClick(tthis, list, index) {
+        logger.info('item clickedg')
+        const item = tthis.state.items[index]
+        tthis.state.savedLists.defaultList = {id: item.id, title: item.title}
+        logger.info(`clicked ${item.title} / ${item.id}`)
+        writeListsToFile(tthis.state.savedLists)
+    },
+
+    initList() {
         return hmUI.createWidget(hmUI.widget.SCROLL_LIST, {
             x: 0,
             y: 60,
@@ -31,30 +86,13 @@ Page({
             item_config_count: 1,
             data_array: this.state.items,
             data_count: this.state.items.length,
-            item_click_func: this.scrollListItemClick,
+            item_click_func: (l, i) => this.scrollListItemClick(this, l, i),
             data_type_config_count: 2
         })
-    }, fetchLists() {
-        messageBuilder.request({
-            method: TODO_MSG.GET_LISTS
-        }).then(({result}) => {
-            if (result.error || result === 'ERROR') {
-                hmUI.showToast({
-                    text: 'error'
-                })
-                logger.info(JSON.stringify(result))
-            } else {
-                logger.info(JSON.stringify(result))
-                this.state.items = result.items
-                this.updateList()
-            }
-        }).catch((err) => logger.error(err))
-    }, scrollListItemClick(list, index) {
-        logger.info('item clickedg')
-    }, build() {
-        logger.debug('page build invoked')
+    },
 
-        const text = hmUI.createWidget(hmUI.widget.TEXT, {
+    initTitle() {
+        return hmUI.createWidget(hmUI.widget.TEXT, {
             x: 0,
             y: 0,
             w: 454,
@@ -66,16 +104,6 @@ Page({
             text_style: hmUI.text_style.NONE,
             text: 'Lists'
         })
-
-        this.state.list = this.initList()
-        this.fetchLists()
     },
 
-    onInit() {
-        logger.debug('page onInit invoked')
-    },
-
-    onDestroy() {
-        logger.debug('page onDestroy invoked')
-    },
 })
