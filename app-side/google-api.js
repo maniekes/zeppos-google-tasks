@@ -5,7 +5,8 @@ export const fetchLists = async () => {
 }
 
 export const fetchTasksForList = async (listId) => {
-    return getGoogleEndpoint(`https://tasks.googleapis.com/tasks/v1/lists/${listId}/tasks?showCompleted=true&showDeleted=true&showHidden=true`)
+    return getGoogleEndpoint(`https://tasks.googleapis.com/tasks/v1/lists/${listId}/tasks`)
+    // return getGoogleEndpoint(`https://tasks.googleapis.com/tasks/v1/lists/${listId}/tasks?showCompleted=true&showDeleted=true&showHidden=true`)
 }
 
 const getGoogleEndpoint = async (url) => {
