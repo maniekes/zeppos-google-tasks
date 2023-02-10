@@ -37,8 +37,10 @@ Page({
                 url: 'page/t-rex2/home/lists.page'
             })
         } else {
+            this.initTitle()
             this.state.list = this.initList()
             this.fetchTasks(this.state.currentList.id)
+            this.registerGestures()
         }
     },
 
@@ -75,6 +77,36 @@ Page({
                 this.updateList()
             }
         }).catch((err) => logger.error(err))
+    },
+
+    registerGestures() {
+//Registering a gesture listener Repeated registration of a JsApp will cause the last registered callback to fail.
+        hmApp.registerGestureEvent(function (event) {
+            let msg = 'none'
+            switch (event) {
+                case hmApp.gesture.UP:
+                    msg = 'up'
+                    break
+                case hmApp.gesture.DOWN:
+                    msg = 'down'
+                    break
+                case hmApp.gesture.LEFT:
+                    msg = 'left'
+                    hmApp.gotoPage({
+                        url: 'page/t-rex2/home/lists.page'
+                    })
+                    break
+                case hmApp.gesture.RIGHT:
+                    msg = 'right'
+                    break
+                default:
+                    break
+            }
+            console.log(`receive gesture event ${msg}`)
+
+            //Not skipping default behavior
+            return false
+        })
     },
 
     initList() {
