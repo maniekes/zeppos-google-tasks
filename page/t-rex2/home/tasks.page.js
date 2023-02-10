@@ -16,24 +16,30 @@ Page({
     onInit(p) {
         logger.debug('page onInit invoked')
         const param = p !== undefined ? JSON.parse(p) : {}
+        logger.debug('received following param: ' + param.id)
         const savedLists = readListsFromFile()
-        this.currentList = savedLists.defaultList
+        logger.info(`fetched savedlists ${savedLists}`)
+        if (param.id) {
+            logger.info(`setting list from param ${param.id} ${param.title}`)
+            this.state.currentList = {id: param.id, title: param.title}
+        } else if (savedLists.defaultList?.id) {
+            logger.info(`setting saved list ${param.id} ${param.title}`)
+            this.state.currentList = savedLists.defaultList
+        }
     },
 
     build() {
         logger.debug('page build invoked')
 
-        if (!this.state.currentList) {
+        if (!this.state.currentList.id) {
             logger.info('no default list set, going to lists')
             hmApp.gotoPage({
                 url: 'page/t-rex2/home/lists.page'
             })
-            return;
+        } else {
+            this.state.list = this.initList()
+            this.fetchTasks(this.state.currentList.id)
         }
-
-        this.initList()
-        this.fetchTasks(this.state.currentList.id)
-
     },
 
     onDestroy() {
@@ -64,7 +70,7 @@ Page({
                 logger.info(JSON.stringify(result))
             } else {
                 logger.info(JSON.stringify(result))
-                this.state.savedLists.items = result.items
+                this.state.currentList.items = result.items
                 this.state.items = result.items
                 this.updateList()
             }

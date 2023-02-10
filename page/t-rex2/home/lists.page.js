@@ -61,9 +61,14 @@ Page({
     scrollListItemClick(tthis, list, index) {
         logger.info('item clickedg')
         const item = tthis.state.items[index]
-        tthis.state.savedLists.defaultList = {id: item.id, title: item.title}
+        const listObject = {id: item.id, title: item.title};
+        tthis.state.savedLists.defaultList = listObject
         logger.info(`clicked ${item.title} / ${item.id}`)
         writeListsToFile(tthis.state.savedLists)
+        hmApp.gotoPage({
+            url: 'page/t-rex2/home/tasks.page',
+            param: JSON.stringify(listObject)
+        })
     },
 
     initList() {
