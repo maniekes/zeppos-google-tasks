@@ -7,7 +7,7 @@ const logger = DeviceRuntimeCore.HmLogger.getLogger('zeppos-google-tasks')
 
 Page({
     state: {
-        header: {title: 'Lists'},
+        header: {title: 'Lists.'},
         items: [{title: 'loading'}],
         footer: {title: 'fajnie, nie?'},
         list: null,
@@ -60,6 +60,7 @@ Page({
                 logger.info(JSON.stringify(result))
             } else {
                 logger.info(JSON.stringify(result))
+                this.state.header.title = 'Lists'
                 this.state.savedLists.items = result.items
                 this.state.items = result.items
                 this.updateList()
@@ -75,7 +76,7 @@ Page({
         tthis.state.savedLists.defaultList = listObject
         logger.info(`clicked ${item.title} / ${item.id}`)
         writeListsToFile(tthis.state.savedLists)
-        hmApp.gotoPage({
+        hmApp.reloadPage({
             url: 'page/t-rex2/home/tasks.page',
             param: JSON.stringify(listObject)
         })

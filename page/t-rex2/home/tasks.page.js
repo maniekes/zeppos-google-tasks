@@ -33,7 +33,7 @@ Page({
 
         if (!this.state.currentList.id) {
             logger.info('no default list set, going to lists')
-            hmApp.gotoPage({
+            hmApp.reloadPage({
                 url: 'page/t-rex2/home/lists.page'
             })
         } else {
@@ -92,7 +92,7 @@ Page({
                     break
                 case hmApp.gesture.LEFT:
                     msg = 'left'
-                    hmApp.gotoPage({
+                    hmApp.reloadPage({
                         url: 'page/t-rex2/home/lists.page'
                     })
                     break
