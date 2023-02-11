@@ -14,6 +14,8 @@ Page({
         list: null,
         title: null,
         currentList: {}
+        //TODO: cache fetched tasks for faster start / offline mode
+        //TODO: cache completed tasks when offline and send to phone when online
     },
 
     onInit(p) {
