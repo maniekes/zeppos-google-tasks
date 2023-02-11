@@ -1,24 +1,74 @@
 import {GOOGLE_API_CLIENT_ID, GOOGLE_API_CLIENT_SECRET} from "../env";
 
 export const fetchLists = async () => {
-    return getGoogleEndpoint('https://tasks.googleapis.com/tasks/v1/users/@me/lists')
+    return getGoogleEndpoint('https://tasks.googleapis.com/tasks/v1/users/@me/lists?fields=items.id,items.title')
 }
 
 export const fetchTasksForList = async (listId) => {
-    return getGoogleEndpoint(`https://tasks.googleapis.com/tasks/v1/lists/${listId}/tasks`)
+    return getGoogleEndpoint(`https://tasks.googleapis.com/tasks/v1/lists/${listId}/tasks?showCompleted=false&fields=items.id,items.title`)
     // return getGoogleEndpoint(`https://tasks.googleapis.com/tasks/v1/lists/${listId}/tasks?showCompleted=true&showDeleted=true&showHidden=true`)
+}
+
+export const completeTask = async (listId, taskId) => {
+    return patchGoogleEndpoint(`https://tasks.googleapis.com/tasks/v1/lists/${listId}/tasks/${taskId}?fields=status`, {status: 'completed'});
+}
+export const completeWholeTask = async (listId, taskId, task) => {
+    task.status='completed'
+    return putGoogleEndpoint(`https://tasks.googleapis.com/tasks/v1/lists/${listId}/tasks/${taskId}`, task);
 }
 
 const getGoogleEndpoint = async (url) => {
     try {
         const authToken = await getAuthToken()
-        settings.settingsStorage.setItem('result1', '1'+JSON.stringify(authToken))
+        settings.settingsStorage.setItem('result1', '1' + JSON.stringify(authToken))
         const {body: data} = await fetch({
             url: url, method: 'GET', headers: {
                 'Authorization': `Bearer ${authToken.access_token}`
             }
         })
-        settings.settingsStorage.setItem('result2', '2'+JSON.stringify(data))
+        settings.settingsStorage.setItem('result2', '2' + JSON.stringify(data))
+        return (typeof data == 'string') ? JSON.parse(data) : data
+    } catch (error) {
+        settings.settingsStorage.setItem('result2', error)
+        return 'ERROR'
+    }
+}
+
+const putGoogleEndpoint = async (url, payload) => {
+    try {
+        const authToken = await getAuthToken()
+        settings.settingsStorage.setItem('result1', '1' + url)
+        const {body: data} = await fetch({
+            url: url,
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${authToken.access_token}`
+            },
+            body: typeof payload === 'object' ? JSON.stringify(payload) : payload
+        })
+        settings.settingsStorage.setItem('result2', '2' + JSON.stringify(data))
+        return (typeof data == 'string') ? JSON.parse(data) : data
+    } catch (error) {
+        settings.settingsStorage.setItem('result2', error)
+        return 'ERROR'
+    }
+}
+
+const patchGoogleEndpoint = async (url, payload) => {
+    try {
+        const authToken = await getAuthToken()
+        settings.settingsStorage.setItem('result1', '1' + url)
+        const {body: data} = await fetch({
+            url: url,
+            method: 'PATCH',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${authToken.access_token}`
+            },
+            body: typeof payload === 'object' ? JSON.stringify(payload) : payload
+        })
+        settings.settingsStorage.setItem('result2', '2' + JSON.stringify(data))
         return (typeof data == 'string') ? JSON.parse(data) : data
     } catch (error) {
         settings.settingsStorage.setItem('result2', error)

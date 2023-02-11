@@ -51,7 +51,8 @@ Page({
     scrollListItemClick(tthis, list, index) {
         logger.info('item clickedg')
         const item = tthis.state.items[index]
-        logger.info(`clicked ${item.title} / ${item.id}`)
+        logger.info(`clicked ${item.title} / ${item.id} on list ${this.state.currentList.id}`)
+        this.completeTask(this.state.currentList.id, item.id, item)
     },
 
     updateList() {
@@ -75,6 +76,25 @@ Page({
                 this.state.currentList.items = result.items
                 this.state.items = result.items
                 this.updateList()
+            }
+        }).catch((err) => logger.error(err))
+    },
+
+    completeTask(listId, taskId, task) {
+        messageBuilder.request({
+            method: TODO_MSG.COMPLETE_TASK_PUT,
+            listId: listId,
+            taskId: taskId,
+            task: task
+        }).then(({result}) => {
+            if (result.error || result === 'ERROR') {
+                hmUI.showToast({
+                    text: 'error'
+                })
+                logger.info(JSON.stringify(result))
+            } else {
+                logger.info(JSON.stringify(result))
+                this.fetchTasks(listId)
             }
         }).catch((err) => logger.error(err))
     },

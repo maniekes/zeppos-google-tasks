@@ -1,5 +1,5 @@
 import {MessageBuilder} from '../shared/message'
-import {fetchLists, fetchTasksForList} from "./google-api";
+import {completeTask, completeWholeTask, fetchLists, fetchTasksForList} from "./google-api";
 import {TODO_MSG} from "../utils/constants";
 
 const messageBuilder = new MessageBuilder()
@@ -25,7 +25,7 @@ AppSideService({
 
             switch (payload.method) {
                 case TODO_MSG.GET_LISTS:
-                    fetchLists().then( lists => {
+                    fetchLists().then(lists => {
                         ctx.response({
                             data: {result: lists},
                         })
@@ -33,7 +33,23 @@ AppSideService({
                     break;
 
                 case TODO_MSG.GET_TASKS_FOR_LIST:
-                    fetchTasksForList(payload.listId).then( tasks => {
+                    fetchTasksForList(payload.listId).then(tasks => {
+                        ctx.response({
+                            data: {result: tasks},
+                        })
+                    })
+                    break;
+
+                case TODO_MSG.COMPLETE_TASK:
+                    completeTask(payload.listId, payload.taskId).then(tasks => {
+                        ctx.response({
+                            data: {result: tasks},
+                        })
+                    })
+                    break;
+
+                case TODO_MSG.COMPLETE_TASK_PUT:
+                    completeWholeTask(payload.listId, payload.taskId, payload.task).then(tasks => {
                         ctx.response({
                             data: {result: tasks},
                         })

@@ -10,7 +10,9 @@ export const GOOGLE_API = {
 
 export const TODO_MSG = {
     GET_LISTS: 'GET_LISTS',
-    GET_TASKS_FOR_LIST: 'GET_TASKS_FOR_LIST'
+    GET_TASKS_FOR_LIST: 'GET_TASKS_FOR_LIST',
+    COMPLETE_TASK: 'COMPLETE_TASK',
+    COMPLETE_TASK_PUT: 'COMPLETE_TASK_PUT'
 }
 
 export const TODO_LISTS_FILE = 'fs_todo_lists'
