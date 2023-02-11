@@ -41,15 +41,7 @@ AppSideService({
                     break;
 
                 case TODO_MSG.COMPLETE_TASK:
-                    completeTask(payload.listId, payload.taskId).then(tasks => {
-                        ctx.response({
-                            data: {result: tasks},
-                        })
-                    })
-                    break;
-
-                case TODO_MSG.COMPLETE_TASK_PUT:
-                    completeWholeTask(payload.listId, payload.taskId, payload.task).then(tasks => {
+                    completeTask(payload.listId, payload.task).then(tasks => {
                         ctx.response({
                             data: {result: tasks},
                         })

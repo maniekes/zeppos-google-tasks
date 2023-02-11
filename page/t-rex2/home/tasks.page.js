@@ -52,7 +52,7 @@ Page({
         logger.info('item clickedg')
         const item = tthis.state.items[index]
         logger.info(`clicked ${item.title} / ${item.id} on list ${this.state.currentList.id}`)
-        this.completeTask(this.state.currentList.id, item.id, item)
+        this.completeTask(this.state.currentList.id, item)
     },
 
     updateList() {
@@ -80,11 +80,10 @@ Page({
         }).catch((err) => logger.error(err))
     },
 
-    completeTask(listId, taskId, task) {
+    completeTask(listId, task) {
         messageBuilder.request({
-            method: TODO_MSG.COMPLETE_TASK_PUT,
+            method: TODO_MSG.COMPLETE_TASK,
             listId: listId,
-            taskId: taskId,
             task: task
         }).then(({result}) => {
             if (result.error || result === 'ERROR') {
