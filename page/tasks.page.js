@@ -71,7 +71,6 @@ Page({
             } else {
                 logger.info(JSON.stringify(result))
                 this.state.header.title = 'Tasks'
-                this.state.currentList.items = result.items
                 this.state.items = result.items
                 updateList(this.state.list, this.state.header, this.state.items, this.state.footer)
             }
