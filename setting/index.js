@@ -22,6 +22,7 @@ AppSettingsPage({
         const txt2 = Text({style: {display: 'block', marginTop: '20px'}}, this.state.props.settingsStorage.getItem('result1'))
         const txt3 = Text({style: {display: 'block', marginTop: '20px'}}, this.state.props.settingsStorage.getItem('result2'))
         const txt4 = Text({style: {display: 'block', marginTop: '20px'}}, this.state.props.settingsStorage.getItem('result3'))
+        const txt5 = Text({style: {display: 'block', marginTop: '20px'}}, this.state.props.settingsStorage.getItem('result4'))
         const btntmp = Button({
             label: 'overrideauth',
             onClick: () => {
@@ -70,6 +71,6 @@ AppSettingsPage({
             //     console.log(props)
             // }
         });
-        return Section({}, [auth, btntmp, btn1, btn2, txt, txt2, txt3, txt4])
+        return Section({}, [auth, btntmp, btn1, btn2, txt, txt2, txt3, txt4, txt5])
     },
 })
