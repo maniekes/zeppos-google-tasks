@@ -1,5 +1,5 @@
-import {TODO_MSG} from "../../../utils/constants";
-import {readListsFromFile, writeListsToFile} from "../../../utils/fs";
+import {TODO_MSG} from "../utils/constants";
+import {readListsFromFile, writeListsToFile} from "../utils/fs";
 
 const {messageBuilder} = getApp()._options.globalData
 
@@ -77,7 +77,7 @@ Page({
         logger.info(`clicked ${item.title} / ${item.id}`)
         writeListsToFile(tthis.state.savedLists)
         hmApp.reloadPage({
-            url: 'page/t-rex2/home/tasks.page',
+            url: 'page/tasks.page',
             param: JSON.stringify(listObject)
         })
     },
@@ -130,20 +130,4 @@ Page({
             data_type_config_count: 3
         })
     },
-
-    initTitle() {
-        return hmUI.createWidget(hmUI.widget.TEXT, {
-            x: 0,
-            y: 0,
-            w: 454,
-            h: 40,
-            color: 0xffffff,
-            text_size: 36,
-            align_h: hmUI.align.CENTER_H,
-            align_v: hmUI.align.CENTER_V,
-            text_style: hmUI.text_style.NONE,
-            text: 'Lists'
-        })
-    },
-
 })
