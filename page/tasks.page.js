@@ -1,6 +1,6 @@
 import {TODO_MSG} from "../utils/constants";
-import {readListsFromFile, writeListsToFile} from "../utils/fs";
-import {initList, updateList} from "./common.page";
+import {readListsFromFile, readTasksFromFile, writeListsToFile, writeTasksToFile} from "../utils/fs";
+import {initList, LIST_HEADER, updateList} from "./common.page";
 
 const {messageBuilder} = getApp()._options.globalData
 
@@ -8,13 +8,12 @@ const logger = DeviceRuntimeCore.HmLogger.getLogger('zeppos-google-tasks')
 
 Page({
     state: {
-        header: {title: 'Tasks.'},
+        header: {title: 'Tasks', mode: LIST_HEADER.OFFLINE},
         items: [{title: 'loading'}],
         footer: {title: 'fajnie, nie?'},
         list: null,
         title: null,
         currentList: {}
-        //TODO: cache fetched tasks for faster start / offline mode
         //TODO: cache completed tasks when offline and send to phone when online
     },
 
@@ -23,13 +22,22 @@ Page({
         const param = p !== undefined ? JSON.parse(p) : {}
         logger.debug('received following param: ' + param.id)
         const savedLists = readListsFromFile()
-        logger.info(`fetched savedlists ${savedLists}`)
         if (param.id) {
             logger.info(`setting list from param ${param.id} ${param.title}`)
             this.state.currentList = {id: param.id, title: param.title}
         } else if (savedLists.defaultList?.id) {
             logger.info(`setting saved list ${param.id} ${param.title}`)
             this.state.currentList = savedLists.defaultList
+        }
+        if (this.state.currentList.title) {
+            this.state.header.title = this.state.currentList.title
+        }
+        if (this.state.currentList.id) {
+            const cachedItems = readTasksFromFile(this.state.currentList.id)
+            if (cachedItems.length !== 0) {
+                this.state.items = cachedItems
+                this.state.header.mode = LIST_HEADER.CACHE
+            }
         }
     },
 
@@ -42,7 +50,6 @@ Page({
                 url: 'page/lists.page'
             })
         } else {
-
             this.state.list = initList(this, this.scrollListItemClick)
             this.fetchTasks(this.state.currentList.id)
             this.registerGestures()
@@ -72,9 +79,10 @@ Page({
                 logger.info(JSON.stringify(result))
             } else {
                 logger.info(JSON.stringify(result))
-                this.state.header.title = 'Tasks'
+                this.state.header.mode = LIST_HEADER.ONLINE
                 this.state.items = result.items
                 updateList(this.state.list, this.state.header, this.state.items, this.state.footer)
+                writeTasksToFile(this.state.currentList.id, this.state.items)
             }
         }).catch((err) => logger.error(err))
     },
