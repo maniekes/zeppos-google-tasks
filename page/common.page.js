@@ -72,7 +72,7 @@ const buildItemConfig = () => {
 }
 
 export const beautifyElement = element => {
-    const max_length = 30
+    const max_length = 28
     const l = element.title.length
     if (l < max_length) {
         element.displayTitle = element.title
