@@ -40,7 +40,15 @@ const buildItemConfig = () => {
             type_id: 1,
             item_bg_color: 0x000000,
             item_bg_radius: 20,
-            text_view: [{x: (454-titleWidth)/2, y: 35, w: titleWidth, h: 40, key: 'title', color: 0xffffff, text_size: 30},
+            text_view: [{
+                x: (454 - titleWidth) / 2,
+                y: 35,
+                w: titleWidth,
+                h: 40,
+                key: 'title',
+                color: 0xffffff,
+                text_size: 30
+            },
                 {x: 0, y: 0, w: 454, h: 20, key: 'mode', color: 0xffffff, text_size: 13}],
             text_view_count: 2,
             item_height: 80
@@ -49,9 +57,9 @@ const buildItemConfig = () => {
             type_id: 2,
             item_bg_color: 0x333333,
             item_bg_radius: 40,
-            text_view: [{x: 20, y: 15, w: 414, h: 40, key: 'title', color: 0xffffff, text_size: 30}],
+            text_view: [{x: 20, y: 0, w: 414, h: 80, key: 'displayTitle', color: 0xffffff, text_size: 30}],
             text_view_count: 1,
-            item_height: 80
+            item_height: 85
         },
         {
             type_id: 3,
@@ -63,6 +71,16 @@ const buildItemConfig = () => {
         }]
 }
 
+export const beutifyElement = element => {
+    const l = element.title.length
+    if (l < 30) {
+        element.displayTitle = element.title
+    } else {
+        const splitPoint = Math.round(l / 2)
+        element.displayTitle = `${element.title.substring(0, splitPoint)}\n${element.title.substring(splitPoint)}`
+    }
+    return element
+}
 export const LIST_HEADER = {
     OFFLINE: 'offline',
     CACHE: 'cache',

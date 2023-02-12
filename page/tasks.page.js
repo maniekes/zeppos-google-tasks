@@ -1,6 +1,6 @@
 import {TODO_MSG} from "../utils/constants";
 import {readListsFromFile, readTasksFromFile, writeListsToFile, writeTasksToFile} from "../utils/fs";
-import {initList, LIST_HEADER, updateList} from "./common.page";
+import {beutifyElement, initList, LIST_HEADER, updateList} from "./common.page";
 
 const {messageBuilder} = getApp()._options.globalData
 
@@ -9,7 +9,7 @@ const logger = DeviceRuntimeCore.HmLogger.getLogger('zeppos-google-tasks')
 Page({
     state: {
         header: {title: 'Tasks', mode: LIST_HEADER.OFFLINE},
-        items: [{title: 'loading'}],
+        items: [{displayTitle: 'loading'}],
         footer: {title: 'fajnie, nie?'},
         list: null,
         title: null,
@@ -61,7 +61,7 @@ Page({
     },
 
     scrollListItemClick(tthis, list, index) {
-        if(index===0 || index === tthis.state.items.length+1) {
+        if (index === 0 || index === tthis.state.items.length + 1) {
             return
         }
         logger.info('item clickedg')
@@ -84,7 +84,7 @@ Page({
             } else {
                 logger.info(JSON.stringify(result))
                 this.state.header.mode = LIST_HEADER.ONLINE
-                this.state.items = result.items
+                this.state.items = result.items.map(beutifyElement)
                 updateList(this.state.list, this.state.header, this.state.items, this.state.footer)
                 writeTasksToFile(this.state.currentList.id, this.state.items)
             }
