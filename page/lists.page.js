@@ -57,6 +57,9 @@ Page({
     },
 
     scrollListItemClick(tthis, list, index) {
+        if(index===0 || index === tthis.state.items.length+1) {
+            return
+        }
         logger.info('item clickedg')
         const item = tthis.state.items[index - 1]
         const listObject = {id: item.id, title: item.title};
