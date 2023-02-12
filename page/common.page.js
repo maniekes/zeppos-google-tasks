@@ -72,15 +72,27 @@ const buildItemConfig = () => {
 }
 
 export const beautifyElement = element => {
+    const max_length = 30
     const l = element.title.length
-    if (l < 30) {
+    if (l < max_length) {
         element.displayTitle = element.title
     } else {
-        const splitPoint = Math.round(l / 2)
-        element.displayTitle = `${element.title.substring(0, splitPoint)}\n${element.title.substring(splitPoint)}`
+        const middle = Math.round(l / 2)
+        const left = element.title.lastIndexOf(' ', middle)
+        const right = element.title.indexOf(' ', middle)
+        const leftSpace = left === -1 ? 0 : left
+        const rightSpace = left === -1 ? element.title.length : right
+        const bestMiddleSpaceCut = Math.abs(leftSpace - middle) < Math.abs(rightSpace - middle) ? leftSpace : rightSpace
+        console.log([0, leftSpace, rightSpace, bestMiddleSpaceCut, element.title.length])
+        if (Math.abs(bestMiddleSpaceCut - middle) > max_length) {
+            element.displayTitle = `${element.title.substring(0, middle)}\n${element.title.substring(middle)}`
+        } else {
+            element.displayTitle = `${element.title.substring(0, bestMiddleSpaceCut)}\n${element.title.substring(bestMiddleSpaceCut + 1)}`
+        }
     }
     return element
 }
+
 export const LIST_HEADER = {
     OFFLINE: 'offline',
     CACHE: 'cache',
