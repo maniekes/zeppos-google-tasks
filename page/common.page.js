@@ -1,13 +1,13 @@
 export const initList = (tthis, callback) => {
-    const itemconfig = buildItemConfig()
+    const itemConfig = buildItemConfig()
     return hmUI.createWidget(hmUI.widget.SCROLL_LIST, {
         x: 0,
         y: 0,
         h: px(454),
         w: px(454),
         item_space: 20,
-        item_config: itemconfig,
-        item_config_count: itemconfig.length,
+        item_config: itemConfig,
+        item_config_count: itemConfig.length,
         item_click_func: (l, i) => callback(tthis, l, i),
         ...buildDataArrayProps(tthis.state.header, tthis.state.items, tthis.state.footer)
     })
