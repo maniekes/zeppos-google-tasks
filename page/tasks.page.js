@@ -63,6 +63,7 @@ Page({
     scrollListItemClick(tthis, list, index) {
         logger.info('item clickedg')
         const item = tthis.state.items[index - 1]
+        tthis.removeTask(index - 1)
         logger.info(`clicked ${item.title} / ${item.id} on list ${tthis.state.currentList.id}`)
         tthis.completeTask(tthis.state.currentList.id, item)
     },
@@ -103,6 +104,12 @@ Page({
                 this.fetchTasks(listId)
             }
         }).catch((err) => logger.error(err))
+    },
+
+    removeTask(index) {
+        this.state.header.mode = LIST_HEADER.UPDATING
+        this.state.items.splice(index, 1)
+        updateList(this.state.list, this.state.header, this.state.items, this.state.footer)
     },
 
     registerGestures() {

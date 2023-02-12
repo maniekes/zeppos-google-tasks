@@ -66,5 +66,6 @@ const buildItemConfig = () => {
 export const LIST_HEADER = {
     OFFLINE: 'offline',
     CACHE: 'cache',
-    ONLINE: 'online'
+    ONLINE: 'online',
+    UPDATING: 'updating'
 }
