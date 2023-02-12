@@ -1,6 +1,6 @@
 import {TODO_MSG} from "../utils/constants";
 import {readListsFromFile, writeListsToFile} from "../utils/fs";
-import {beutifyElement, initList, LIST_HEADER, updateList} from "./common.page";
+import {beautifyElement, initList, LIST_HEADER, updateList} from "./common.page";
 
 const {messageBuilder} = getApp()._options.globalData
 
@@ -48,7 +48,7 @@ Page({
             } else {
                 logger.info(JSON.stringify(result))
                 this.state.header.mode = LIST_HEADER.ONLINE
-                this.state.items = result.items.map(beutifyElement)
+                this.state.items = result.items.map(beautifyElement)
                 this.state.savedLists.items = this.state.items
                 updateList(this.state.list, this.state.header, this.state.items, this.state.footer)
                 writeListsToFile(this.state.savedLists)

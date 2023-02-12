@@ -71,7 +71,7 @@ const buildItemConfig = () => {
         }]
 }
 
-export const beutifyElement = element => {
+export const beautifyElement = element => {
     const l = element.title.length
     if (l < 30) {
         element.displayTitle = element.title
