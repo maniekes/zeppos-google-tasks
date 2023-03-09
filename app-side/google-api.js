@@ -16,16 +16,16 @@ export const completeTask = async (listId, task) => {
 const getGoogleEndpoint = async (url) => {
     try {
         const authToken = await getAuthToken()
-        settings.settingsStorage.setItem('result1', '1' + JSON.stringify(authToken))
+        settings.settingsStorage.setItem('apiCallDebug', '1' + JSON.stringify(authToken))
         const {body: data} = await fetch({
             url: url, method: 'GET', headers: {
                 'Authorization': `Bearer ${authToken.access_token}`
             }
         })
-        settings.settingsStorage.setItem('result2', '2' + JSON.stringify(data))
+        settings.settingsStorage.setItem('apiCallResult', '2' + JSON.stringify(data))
         return (typeof data == 'string') ? JSON.parse(data) : data
     } catch (error) {
-        settings.settingsStorage.setItem('result2', error)
+        settings.settingsStorage.setItem('apiCallResult', error)
         return 'ERROR'
     }
 }
@@ -36,7 +36,7 @@ const getGoogleEndpoint = async (url) => {
 const putGoogleEndpoint = async (url, payload) => {
     try {
         const authToken = await getAuthToken()
-        settings.settingsStorage.setItem('result1', '1' + url)
+        settings.settingsStorage.setItem('apiCallDebug', '1' + url)
         const {body: data} = await fetch({
             url: url,
             method: 'PUT',
@@ -46,10 +46,10 @@ const putGoogleEndpoint = async (url, payload) => {
             },
             body: typeof payload === 'object' ? JSON.stringify(payload) : payload
         })
-        settings.settingsStorage.setItem('result2', '2' + JSON.stringify(data))
+        settings.settingsStorage.setItem('apiCallResult', '2' + JSON.stringify(data))
         return (typeof data == 'string') ? JSON.parse(data) : data
     } catch (error) {
-        settings.settingsStorage.setItem('result2', error)
+        settings.settingsStorage.setItem('apiCallResult', error)
         return 'ERROR'
     }
 }
@@ -58,20 +58,20 @@ const getAuthToken = async () => {
     let authToken = JSON.parse(settings.settingsStorage.getItem('tokenAuth'));
     console.info('token from settings:')
     console.info(authToken)
-    settings.settingsStorage.setItem('result3', 'calling getAuthToken0')
+    settings.settingsStorage.setItem('debugState1', 'calling getAuthToken0')
     if (authToken.expiry_date === null || authToken.expiry_date < new Date().toISOString()) {
         console.log(`refreshing tocken because ${authToken?.expiry_date} and ${Date()}`)
         return await refreshToken()
     }
-    settings.settingsStorage.setItem('result3', 'calling getAuthToken5')
+    settings.settingsStorage.setItem('debugState1', 'calling getAuthToken5')
     return authToken;
 }
 
 const refreshToken = async () => {
     console.log('refreshing token')
-    settings.settingsStorage.setItem('result3', 'calling refreshToken1')
+    settings.settingsStorage.setItem('debugState1', 'calling refreshToken1')
     const authToken = JSON.parse(settings.settingsStorage.getItem('tokenAuth'));
-    settings.settingsStorage.setItem('result3', 'calling refreshToken2')
+    settings.settingsStorage.setItem('debugState1', 'calling refreshToken2')
     const {body: data} = await fetch({
         url: 'https://oauth2.googleapis.com/token',
         method: 'POST',
@@ -80,14 +80,14 @@ const refreshToken = async () => {
         },
         body: `grant_type=refresh_token&refresh_token=${authToken.refresh_token}&client_id=${GOOGLE_API_CLIENT_ID}&client_secret=${GOOGLE_API_CLIENT_SECRET}`
     })
-    settings.settingsStorage.setItem('result3', 'calling refreshToken3')
+    settings.settingsStorage.setItem('debugState1', 'calling refreshToken3')
     const dat = (typeof data == 'string') ? JSON.parse(data) : data
     authToken.access_token = dat.access_token
     let d = new Date();
     d.setTime(d.getTime() + dat.expires_in * 1000)
     authToken.requested_date = new Date()
     authToken.expiry_date = d
-    settings.settingsStorage.setItem('result3', 'calling refreshToken4')
+    settings.settingsStorage.setItem('debugState1', 'calling refreshToken4')
     settings.settingsStorage.setItem('tokenAuth', JSON.stringify(authToken))
     return authToken
 }

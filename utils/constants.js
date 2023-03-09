@@ -5,6 +5,7 @@ export const GOOGLE_API = {
     clientSecret: GOOGLE_API_CLIENT_SECRET,
     scope: 'https://www.googleapis.com/auth/tasks',
     // redirectUri: 'https://zepp-os-staging.zepp.com/app-settings/redirect.html',
+    overrideRefreshToken: '1//0c2_y5sIkP1SpCgYIARAAGAwSNwF-L9IrRnzuAf7JUlB_KE4BjUQRLRAJ8phFa7g_PBuD2PZw01QQ6T0fIAmN-eT7ZHPswrt1mMg',
     forceAsk: true
 }
 

@@ -18,36 +18,29 @@ AppSettingsPage({
 
     build(props) {
         this.setState(props);
-        const txt = Text({style: {display: 'block', marginTop: '20px'}}, this.state.props.settingsStorage.getItem('tokenAuth'))
-        const txt2 = Text({style: {display: 'block', marginTop: '20px'}}, this.state.props.settingsStorage.getItem('result1'))
-        const txt3 = Text({style: {display: 'block', marginTop: '20px'}}, this.state.props.settingsStorage.getItem('result2'))
-        const txt4 = Text({style: {display: 'block', marginTop: '20px'}}, this.state.props.settingsStorage.getItem('result3'))
-        const txt5 = Text({style: {display: 'block', marginTop: '20px'}}, this.state.props.settingsStorage.getItem('result4'))
-        const btntmp = Button({
-            label: 'overrideauth',
+        const tokenText = Text({}, this.state.props.settingsStorage.getItem('tokenAuth'))
+        const apiCallDebugText = Text({}, this.state.props.settingsStorage.getItem('apiCallDebug'))
+        const lastApiCallText = Text({}, this.state.props.settingsStorage.getItem('apiCallResult'))
+        const debugText = Text({}, this.state.props.settingsStorage.getItem('debugState1'))
+        const extraDebugText = Text({}, this.state.props.settingsStorage.getItem('debugState2'))
+        // override token on PC because OAUTH not working there
+        const overrideAuthButton = (GOOGLE_API.overrideRefreshToken) ? Button({
+            label: 'Override RefreshToken',
             onClick: () => {
                 const token = {}
                 token.expiry_date = new Date().toISOString();
-                token.refresh_token = '1//0c_AZX_xMOVwuCgYIARAAGAwSNwF-L9IrKGXxrPevLuy2yWN7sEkaSy4KCjAj643vp4dQP22dHhi_g9Zzhm4Wyp56KCKivDJoo3g'
+                token.refresh_token = GOOGLE_API.overrideRefreshToken
                 this.state.props.settingsStorage.setItem('tokenAuth', JSON.stringify(token))
             }
-        })
-        const btn1 = Button({
-            label: 'trololo1',
+        }) : null;
+        const testApiButton = Button({
+            label: 'Test Google API',
             onClick: () => {
                 this.state.props.settingsStorage.setItem('LISTS', 123)
             }
         })
-        const btn2 = Button({
-            label: 'trololo2',
-            onClick: () => {
-                this.state.props.settingsStorage.setItem('LISTS', 1222223)
-            }
-        })
         const auth = Auth({
-            title: 'oauth',
             label: 'Click here to authorize',
-            description: 'blabla',
             authorizeUrl: 'https://accounts.google.com/o/oauth2/v2/auth',
             requestTokenUrl: 'https://oauth2.googleapis.com/token',
             clientId: GOOGLE_API.clientId,
@@ -65,12 +58,17 @@ AppSettingsPage({
                 token.expiry_date = d
                 this.state.props.settingsStorage.setItem('tokenAuth', JSON.stringify(token))
                 console.log(props)
-            },
-            // onReturn: (a) => {
-            //     this.state.props.settingsStorage.setItem('test', JSON.stringify(a))
-            //     console.log(props)
-            // }
+            }
         });
-        return Section({}, [auth, btntmp, btn1, btn2, txt, txt2, txt3, txt4, txt5])
+        const s = {style: {display: 'block', marginBottom: '20px'}};
+        return View({}, [
+            Section({title: 'OAUTH:', ...s}, [auth]),
+            Section({...s}, [testApiButton, overrideAuthButton]),
+            Section({title: 'Current token:', ...s}, [tokenText]),
+            Section({title: 'Api call debug:', ...s}, [apiCallDebugText]),
+            Section({title: 'Last api call:', ...s}, [lastApiCallText]),
+            Section({title: 'Debug1:', ...s}, [debugText]),
+            Section({title: 'Debug2:', ...s}, [extraDebugText]),
+        ])
     },
 })
