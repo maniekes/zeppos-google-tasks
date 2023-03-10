@@ -1,7 +1,8 @@
 # Google Tasks integration app
 Bonjour! this app will allow you to manage your google tasks from your watch.
 
-Before first use - go to settings and click `Click here to authorize`.
+> **Warning**
+> Before first use - go to settings and click `Click here to authorize`.
 
 # Google Tasks API
 This app needs file `env.js` to work. i don't want to put my secrets to git so if u want to test by yourself rename file `env.js.sample` and put your credentials to google tasks api: https://console.cloud.google.com/apis/api/tasks.googleapis.com
