@@ -35,4 +35,5 @@ if you see toast "error" please go to settings app and see content. probably nee
 - add standalone mode for watch (save finished tasks in watch and synchronize them once will connect to phone)
 - add offline mode (the same as above, but without internet)
 - better error toast when sth goes wrong
+- consider adding dialog for confirming task on watch. maybe configurable in settings?
 - ???
