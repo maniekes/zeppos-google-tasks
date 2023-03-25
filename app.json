@@ -1,41 +1,49 @@
 {
   "configVersion": "v2",
   "app": {
-    "appId": 692137,
-    "appName": "Google Tasks",
     "appType": "app",
     "version": {
       "code": 1,
-      "name": "1.0.1"
+      "name": "1.0.0"
     },
+    "appId": 692137,
+    "appName": "Google Tasks",
     "icon": "icon.png",
     "vender": "R. Klimonda",
     "description": "View and complete your Google Tasks on watch"
   },
-  "permissions": [],
   "runtime": {
     "apiVersion": {
       "compatible": "1.0.0",
-      "target": "1.0.1",
+      "target": "1.0.0",
       "minVersion": "1.0.0"
     }
   },
-  "debug": false,
   "targets": {
     "teide": {
       "module": {
         "page": {
           "pages": [
             "page/tasks.page",
-            "page/lists.page"
+            "page/lists.page",
+            "page/kpay/index.page"
           ],
           "window": {
             "navigationBarBackgroundColor": "#ffffff",
             "navigationBarTextStyle": "black",
-            "navigationBarTitleText": "Hello World",
+            "navigationBarTitleText": "",
             "backgroundColor": "#eeeeee",
             "backgroundTextStyle": "light"
           }
+        },
+        "app-widget": {
+          "widgets": []
+        },
+        "watchface": {
+          "path": ""
+        },
+        "watch-widget": {
+          "widgets": []
         },
         "app-side": {
           "path": "app-side/index"
@@ -44,6 +52,7 @@
           "path": "setting/index"
         }
       },
+      "designWidth": 454,
       "platforms": [
         {
           "name": "t-rex2",
@@ -53,14 +62,15 @@
           "name": "t-rex2-w",
           "deviceSource": 419
         }
-      ],
-      "designWidth": 454
+      ]
     }
   },
+  "permissions": [],
   "i18n": {
     "en-US": {
       "appName": "Google Tasks"
     }
   },
-  "defaultLanguage": "en-US"
+  "defaultLanguage": "en-US",
+  "debug": false
 }

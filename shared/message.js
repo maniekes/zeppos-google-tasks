@@ -1,44 +1,22 @@
 import './buffer'
 import './logger'
-import {
-  EventBus
-} from './event'
-import {
-  Deferred,
-  timeout
-} from './defer'
-import {
-  json2buf,
-  buf2json,
-  bin2hex,
-  str2buf
-} from './data'
-import {
-  isHmBleDefined,
-  isHmAppDefined
-} from './js-module'
+import { EventBus } from './event'
+import { Deferred, timeout } from './defer'
+import { json2Buf, buf2Json, buf2hex, bin2hex, bin2json, str2buf } from './data'
+import { isHmBleDefined, isHmAppDefined } from './js-module'
 
 let logger
 
-function initLogger() {
-  if (isHmAppDefined()) {
-    logger = Logger.getLogger('device-message')
-    // logger.level = logger.levels.warn
-  } else {
-    logger = Logger.getLogger('side-message')
-  }
+if (isHmAppDefined()) {
+  logger = Logger.getLogger('device-message')
+  // logger.level = logger.levels.warn
+} else {
+  logger = Logger.getLogger('side-message')
 }
 
 const DEBUG = false
 
-export const MESSAGE_SIZE = 3600
-export const MESSAGE_HEADER = 16
-export const MESSAGE_PAYLOAD = MESSAGE_SIZE - MESSAGE_HEADER
-export const HM_MESSAGE_PROTO_HEADER = 66
-export const HM_MESSAGE_PROTO_PAYLOAD = MESSAGE_PAYLOAD - HM_MESSAGE_PROTO_HEADER
-
 export const MessageFlag = {
-  Runtime: 0x0,
   App: 0x1,
 }
 
@@ -51,9 +29,6 @@ export const MessageType = {
   Log: 0x6,
 }
 
-export const MessageRuntimeType = {
-  Invoke: 0x1
-}
 export const MessageVersion = {
   Version1: 0x1,
 }
@@ -64,40 +39,6 @@ export const MessagePayloadType = {
   Notify: 0x3,
 }
 
-export const DataType = {
-  empty: 'empty',
-  json: 'json',
-  text: 'text',
-  bin: 'bin',
-}
-
-export const MessagePayloadDataTypeOp = {
-  EMPTY: 0x0,
-  TEXT: 0x1,
-  JSON: 0x2,
-  BIN: 0x3,
-}
-
-export function getDataType(type) {
-  switch (type.toLowerCase()) {
-    case DataType.json:
-      return MessagePayloadDataTypeOp.JSON
-      break;
-    case DataType.text:
-      return MessagePayloadDataTypeOp.TEXT
-      break;
-    case DataType.bin:
-      return MessagePayloadDataTypeOp.BIN
-      break;
-    case DataType.empty:
-      return MessagePayloadDataTypeOp.EMPTY
-      break;
-    default:
-      return MessagePayloadDataTypeOp.TEXT
-  }
-}
-
-// 中续，结束
 export const MessagePayloadOpCode = {
   Continued: 0x0,
   Finished: 0x1,
@@ -115,45 +56,6 @@ export function genSpanId() {
 
 export function getTimestamp(t = Date.now()) {
   return t % 10000000
-}
-
-class InvokeAppProto {
-  constructor(messageBuilder) {
-    this.messageBuilder = messageBuilder
-  }
-
-  encode(obj) {
-    const payload = json2buf(obj)
-    return this.buildBin(payload)
-  }
-
-  decode(bin) {
-    const message = this.readBin(bin)
-    return bin2json(message.payload)
-  }
-
-  isInvokeProto(flag, version, type) {
-    return flag === MessageFlag.Runtime && type === MessageRuntimeType.Invoke
-  }
-
-  buildBin(payload, opts = {}) {
-    // opts 覆盖头部选项
-    return this.messageBuilder.buildBin({
-      flag: MessageFlag.Runtime,
-      version: MessageVersion.Version1,
-      type: MessageRuntimeType.Invoke,
-      port1: 0,
-      port2: 0,
-      appId: this.messageBuilder.appId,
-      extra: 0,
-      ...opts,
-      payload,
-    })
-  }
-
-  readBin(bin) {
-    return this.messageBuilder.readBin(bin)
-  }
 }
 
 class Session extends EventBus {
@@ -175,8 +77,17 @@ class Session extends EventBus {
     }
 
     if (payload.payloadLength !== payload.payload.byteLength) {
-      logger.error('receive chunk data length error, expect %d but %d', payload.payloadLength, payload.payload.byteLength)
-      this.emit('error', Error(`receive chunk data length error, expect ${payload.payloadLength} but ${payload.payload.byteLength}`))
+      logger.error(
+        'receive chunk data length error, expect %d but %d',
+        payload.payloadLength,
+        payload.payload.byteLength,
+      )
+      this.emit(
+        'error',
+        Error(
+          `receive chunk data length error, expect ${payload.payloadLength} but ${payload.payload.byteLength}`,
+        ),
+      )
       return
     }
 
@@ -188,7 +99,7 @@ class Session extends EventBus {
     if (this.count !== this.chunks.length) return
 
     for (let i = 1; i <= this.count; i++) {
-      const chunk = this.chunks.find(c => c.seqId === i)
+      const chunk = this.chunks.find((c) => c.seqId === i)
 
       if (!chunk) {
         this.releaseBuf()
@@ -206,8 +117,17 @@ class Session extends EventBus {
     this.finishChunk.payloadLength = this.finishChunk.payload.byteLength
 
     if (this.finishChunk.totalLength !== this.finishChunk.payloadLength) {
-      logger.error('receive full data length error, expect %d but %d', this.finishChunk.payloadLength, this.finishChunk.payload.byteLength)
-      this.emit('error', Error(`receive full data length error, expect ${this.finishChunk.payloadLength} but ${this.finishChunk.payload.byteLength}`))
+      logger.error(
+        'receive full data length error, expect %d but %d',
+        this.finishChunk.payloadLength,
+        this.finishChunk.payload.byteLength,
+      )
+      this.emit(
+        'error',
+        Error(
+          `receive full data length error, expect ${this.finishChunk.payloadLength} but ${this.finishChunk.payload.byteLength}`,
+        ),
+      )
       return
     }
 
@@ -246,17 +166,11 @@ class SessionMgr {
   }
 
   has(id, type) {
-    return this.sessions.has(this.key({
-      id,
-      type
-    }))
+    return this.sessions.has(this.key({ id, type }))
   }
 
   getById(id, type) {
-    return this.sessions.get(this.key({
-      id,
-      type
-    }))
+    return this.sessions.get(this.key({ id, type }))
   }
 
   clear() {
@@ -264,30 +178,23 @@ class SessionMgr {
   }
 }
 
-
 export class MessageBuilder extends EventBus {
-  constructor({
-    appId = 0,
-    appDevicePort = 20,
-    appSidePort = 0,
-    ble = isHmBleDefined() ? hmBle : undefined
-  } = {
+  constructor(
+    { appId = 0, appDevicePort = 20, appSidePort = 0 } = {
       appId: 0,
       appDevicePort: 20,
       appSidePort: 0,
-      ble: isHmBleDefined() ? hmBle : undefined
-    },) {
+    },
+  ) {
     super()
-    initLogger()
     this.isDevice = isHmBleDefined()
     this.isSide = !this.isDevice
 
     this.appId = appId
     this.appDevicePort = appDevicePort
     this.appSidePort = appSidePort
-    this.ble = ble
     this.sendMsg = this.getSafeSend()
-    this.chunkSize = MESSAGE_PAYLOAD
+    this.chunkSize = 2000
     this.tempBuf = null
     this.shakeTask = Deferred()
     this.waitingShakePromise = this.shakeTask.promise
@@ -297,29 +204,9 @@ export class MessageBuilder extends EventBus {
       logger.connect({
         log: (logEvent) => {
           this.log(JSON.stringify(logEvent))
-        }
+        },
       })
     }
-  }
-
-  getMessageSize() {
-    return MESSAGE_SIZE
-  }
-
-  getMessagePayloadSize() {
-    return MESSAGE_PAYLOAD
-  }
-
-  getMessageHeaderSize() {
-    return MESSAGE_HEADER
-  }
-
-  buf2Json(buf) {
-    return buf2json(buf)
-  }
-
-  json2Buf(json) {
-    return json2buf(buf)
   }
 
   now(t = Date.now()) {
@@ -331,9 +218,14 @@ export class MessageBuilder extends EventBus {
       this.onMessage(message)
     })
 
-    this.ble &&
-      this.ble.createConnect((index, data, size) => {
-        DEBUG && logger.warn('[RAW] [R] receive index=>%d size=>%d bin=>%s', index, size, bin2hex(data))
+    hmBle &&
+      hmBle.createConnect((index, data, size) => {
+        logger.warn(
+          '[RAW] [R] receive index=>%d size=>%d bin=>%s',
+          index,
+          size,
+          this.bin2hex(data),
+        )
         this.onFragmentData(data)
       })
 
@@ -345,7 +237,7 @@ export class MessageBuilder extends EventBus {
     logger.debug('app ble disconnect')
     this.sendClose()
     this.off('message')
-    this.ble && this.ble.disConnect()
+    hmBle && hmBle.disConnect()
 
     cb && cb(this)
   }
@@ -353,7 +245,11 @@ export class MessageBuilder extends EventBus {
   listen(cb) {
     messaging &&
       messaging.peerSocket.addListener('message', (message) => {
-        DEBUG && logger.warn('[RAW] [R] receive size=>%d bin=>%s', message.byteLength, bin2hex(message))
+        logger.warn(
+          '[RAW] [R] receive size=>%d bin=>%s',
+          message.byteLength,
+          this.bin2hex(message),
+        )
         this.onMessage(message)
       })
 
@@ -362,11 +258,7 @@ export class MessageBuilder extends EventBus {
   }
 
   buildBin(data) {
-    if (data.payload.byteLength > this.chunkSize) {
-      throw new Error(`${data.payload.byteLength} greater than max size of ${this.chunkSize}`)
-    }
-
-    const size = this.getMessageHeaderSize() + data.payload.byteLength
+    const size = 16 + data.payload.byteLength
     let buf = Buffer.alloc(size)
     let offset = 0
 
@@ -476,7 +368,6 @@ export class MessageBuilder extends EventBus {
     }
   }
 
-  // opts 覆盖头部选项
   buildData(payload, opts = {}) {
     return this.buildBin({
       flag: MessageFlag.App,
@@ -491,23 +382,44 @@ export class MessageBuilder extends EventBus {
     })
   }
 
-  sendBin(buf, debug = DEBUG) {
-    // ble 发送消息
-    debug && logger.warn('[RAW] [S] send size=%d bin=%s', buf.byteLength, bin2hex(buf.buffer))
-    const result = this.ble.send(buf.buffer, buf.byteLength)
-
-    if (!result) {
-      throw Error('send message error')
-    }
+  json2Buf(obj) {
+    return json2Buf(obj)
   }
 
-  sendBinBySide(buf, debug = DEBUG) {
-    // side 发送消息
-    debug && logger.warn('[RAW] [S] send size=%d bin=%s', buf.byteLength, bin2hex(buf.buffer))
+  buf2Json(buf) {
+    return buf2Json(buf)
+  }
+
+  buf2hex(buf) {
+    return buf2hex(buf)
+  }
+
+  bin2hex(bin) {
+    return bin2hex(bin)
+  }
+
+  bin2json(bin) {
+    return bin2json(bin)
+  }
+
+  sendBin(buf) {
+    logger.warn(
+      '[RAW] [S] send size=%d bin=%s',
+      buf.byteLength,
+      this.bin2hex(buf.buffer),
+    )
+    hmBle.send(buf.buffer, buf.byteLength)
+  }
+
+  sendBinBySide(buf) {
+    logger.warn(
+      '[RAW] [S] send size=%d bin=%s',
+      buf.byteLength,
+      this.bin2hex(buf.buffer),
+    )
     messaging.peerSocket.send(buf.buffer)
   }
 
-  // 通用获取逻辑
   getSafeSend() {
     if (this.isDevice) {
       return this.sendBin.bind(this)
@@ -517,92 +429,89 @@ export class MessageBuilder extends EventBus {
   }
 
   _logSend(buf) {
-    this.sendMsg(buf, false)
+    if (this.isDevice) {
+      hmBle.send(buf.buffer, buf.byteLength)
+    } else {
+      messaging.peerSocket.send(buf.buffer)
+    }
   }
 
-  // 大数据的复杂头部分包协议
-  sendHmProtocol({
-    requestId,
-    dataBin,
-    type,
-    contentType,
-    dataType
-  }, {
-    messageType = MessageType.Data
-  } = {}) {
+  sendHmProtocol(
+    { requestId, dataBin, type },
+    { messageType = MessageType.Data } = {},
+  ) {
+    const dataSize = this.chunkSize
     const headerSize = 0
-    const hmDataSize = HM_MESSAGE_PROTO_PAYLOAD
     const userDataLength = dataBin.byteLength
 
     let offset = 0
-    const _buf = Buffer.alloc(hmDataSize)
+    const _buf = Buffer.alloc(dataSize)
     const traceId = requestId ? requestId : genTraceId()
     const spanId = genSpanId()
     let seqId = 1
 
-    const count = Math.ceil(userDataLength / hmDataSize)
+    const count = Math.ceil(userDataLength / dataSize)
 
     function genSeqId() {
       return seqId++
     }
 
     for (let i = 1; i <= count; i++) {
-      this.errorIfBleDisconnect()
       if (i === count) {
-        // last
         const tailSize = userDataLength - offset
         const tailBuf = Buffer.alloc(headerSize + tailSize)
 
         dataBin.copy(tailBuf, headerSize, offset, offset + tailSize)
         offset += tailSize
-        this.sendDataWithSession({
-          traceId,
-          spanId: spanId,
-          seqId: genSeqId(),
-          payload: tailBuf,
-          type,
-          opCode: MessagePayloadOpCode.Finished,
-          totalLength: userDataLength,
-          contentType,
-          dataType,
-        }, {
-          messageType
-        })
+        this.sendDataWithSession(
+          {
+            traceId,
+            spanId: spanId,
+            seqId: genSeqId(),
+            payload: tailBuf,
+            type,
+            opCode: MessagePayloadOpCode.Finished,
+            totalLength: userDataLength,
+          },
+          { messageType },
+        )
 
         break
       }
 
-      dataBin.copy(_buf, headerSize, offset, offset + hmDataSize)
-      offset += hmDataSize
+      dataBin.copy(_buf, headerSize, offset, offset + dataSize)
+      offset += dataSize
 
-      this.sendDataWithSession({
-        traceId,
-        spanId: spanId,
-        seqId: genSeqId(),
-        payload: _buf,
-        type,
-        opCode: MessagePayloadOpCode.Continued,
-        totalLength: userDataLength,
-        contentType,
-        dataType,
-      }, {
-        messageType
-      })
+      this.sendDataWithSession(
+        {
+          traceId,
+          spanId: spanId,
+          seqId: genSeqId(),
+          payload: _buf,
+          type,
+          opCode: MessagePayloadOpCode.Continued,
+          totalLength: userDataLength,
+        },
+        { messageType },
+      )
     }
 
     if (offset === userDataLength) {
-      DEBUG && logger.debug('HmProtocol send ok msgSize=> %d dataSize=> %d', offset, userDataLength)
+      logger.debug(
+        'HmProtocol send ok msgSize=> %d dataSize=> %d',
+        offset,
+        userDataLength,
+      )
     } else {
-      DEBUG && logger.error('HmProtocol send error msgSize=> %d dataSize=> %d', offset, userDataLength)
+      logger.error(
+        'HmProtocol send error msgSize=> %d dataSize=> %d',
+        offset,
+        userDataLength,
+      )
     }
   }
 
-  // 大数据的简单分包协议
-  sendSimpleProtocol({
-    dataBin
-  }, {
-    messageType = MessageType.Data
-  } = {}) {
+  sendSimpleProtocol({ dataBin }, { messageType = MessageType.Data } = {}) {
     const dataSize = this.chunkSize
     const headerSize = 0
     const userDataLength = dataBin.byteLength
@@ -620,11 +529,7 @@ export class MessageBuilder extends EventBus {
 
         dataBin.copy(tailBuf, headerSize, offset, offset + tailSize)
         offset += tailSize
-        this.sendSimpleData({
-          payload: tailBuf
-        }, {
-          messageType
-        })
+        this.sendSimpleData({ payload: tailBuf }, { messageType })
 
         break
       }
@@ -632,11 +537,7 @@ export class MessageBuilder extends EventBus {
       dataBin.copy(_buf, headerSize, offset, offset + dataSize)
       offset += dataSize
 
-      this.sendSimpleData({
-        payload: _buf
-      }, {
-        messageType
-      })
+      this.sendSimpleData({ payload: _buf }, { messageType })
     }
 
     if (offset === userDataLength) {
@@ -646,65 +547,26 @@ export class MessageBuilder extends EventBus {
     }
   }
 
-  sendJson({
-    requestId = 0,
-    json,
-    type = MessagePayloadType.Request,
-    contentType,
-    dataType
-  }) {
-    const packageBin = json2buf(json)
+  sendJson({ requestId = 0, json, type = MessagePayloadType.Request }) {
+    const packageBin = this.json2Buf(json)
     const traceId = requestId ? requestId : genTraceId()
 
-    this.sendHmProtocol({
-      requestId: traceId,
-      dataBin: packageBin,
-      type,
-      contentType,
-      dataType
-    })
-  }
-
-  sendBuf({
-    requestId = 0,
-    buf,
-    type = MessagePayloadType.Request,
-    contentType,
-    dataType
-  }) {
-    const traceId = requestId ? requestId : genTraceId()
-
-    return this.sendHmProtocol({
-      requestId: traceId,
-      dataBin: buf,
-      type,
-      contentType,
-      dataType
-    })
+    this.sendHmProtocol({ requestId: traceId, dataBin: packageBin, type })
   }
 
   sendLog(str) {
     const packageBuf = str2buf(str)
-    this.sendSimpleProtocol({
-      dataBin: packageBuf
-    }, {
-      messageType: MessageType.Log
-    })
+
+    this.sendSimpleProtocol(
+      { dataBin: packageBuf },
+      { messageType: MessageType.Log },
+    )
   }
 
-  sendDataWithSession({
-    traceId,
-    spanId,
-    seqId,
-    payload,
-    type,
-    opCode,
-    totalLength,
-    contentType,
-    dataType
-  }, {
-    messageType
-  },) {
+  sendDataWithSession(
+    { traceId, spanId, seqId, payload, type, opCode, totalLength },
+    { messageType },
+  ) {
     const payloadBin = this.buildPayload({
       traceId,
       spanId,
@@ -713,31 +575,25 @@ export class MessageBuilder extends EventBus {
       type,
       opCode,
       payload,
-      contentType,
-      dataType
     })
 
-    let data = this.isDevice ? this.buildData(payloadBin, {
-      type: messageType
-    }) : payloadBin
+    let data = this.isDevice
+      ? this.buildData(payloadBin, { type: messageType })
+      : payloadBin
 
     this.sendMsg(data)
   }
 
-  sendSimpleData({
-    payload
-  }, {
-    messageType
-  }) {
-    let data = this.isDevice ? this.buildData(payload, {
-      type: messageType
-    }) : payload
+  sendSimpleData({ payload }, { messageType }) {
+    let data = this.isDevice
+      ? this.buildData(payload, { type: messageType })
+      : payload
 
     this._logSend(data)
   }
 
   buildPayload(data) {
-    const size = HM_MESSAGE_PROTO_HEADER + data.payload.byteLength
+    const size = 66 + data.payload.byteLength
     let buf = Buffer.alloc(size)
     let offset = 0
 
@@ -754,7 +610,7 @@ export class MessageBuilder extends EventBus {
     buf.writeUInt32LE(data.spanId, offset)
     offset += 4
 
-    // seqId // 顺序 id,消息部分顺序序列号
+    // seqId 
     buf.writeUInt32LE(data.seqId, offset)
     offset += 4
 
@@ -762,7 +618,7 @@ export class MessageBuilder extends EventBus {
     buf.writeUInt32LE(data.totalLength, offset)
     offset += 4
 
-    // payload length 当前
+    // payload length
     buf.writeUInt32LE(data.payload.byteLength, offset)
     offset += 4
 
@@ -802,16 +658,9 @@ export class MessageBuilder extends EventBus {
     buf.writeUInt32LE(0, offset)
     offset += 4
 
-    // request content data type
-    buf.writeUInt8(data.contentType, offset)
-    offset += 1
-
-    // response data type
-    buf.writeUInt8(data.dataType, offset)
-    offset += 1
-
-    buf.writeUInt16LE(0, offset)
-    offset += 2
+    // timestamp8
+    buf.writeUInt32LE(0, offset)
+    offset += 4
 
     // extra1
     buf.writeUInt32LE(0, offset)
@@ -876,21 +725,13 @@ export class MessageBuilder extends EventBus {
     const timestamp7 = buf.readUInt32LE(offset)
     offset += 4
 
-    // request data type
-    const contentType = buf.readUInt8(offset)
-    offset += 1
-
-    // response data type
-    const dataType = buf.readUInt8(offset)
-    offset += 1
-
-    const extra1 = buf.readUInt16LE(offset)
-    offset += 2
-
-    const extra2 = buf.readUInt32LE(offset)
+    const timestamp8 = buf.readUInt32LE(offset)
     offset += 4
 
-    const extra3 = buf.readUInt32LE(offset)
+    const extra1 = buf.readUInt32LE(offset)
+    offset += 4
+
+    const extra2 = buf.readUInt32LE(offset)
     offset += 4
 
     const payload = buf.subarray(offset)
@@ -904,8 +745,6 @@ export class MessageBuilder extends EventBus {
       payloadLength,
       payloadType,
       opCode,
-      contentType,
-      dataType,
       timestamp1,
       timestamp2,
       timestamp3,
@@ -913,9 +752,9 @@ export class MessageBuilder extends EventBus {
       timestamp5,
       timestamp6,
       timestamp7,
+      timestamp8,
       extra1,
       extra2,
-      extra3,
       payload,
     }
   }
@@ -924,7 +763,7 @@ export class MessageBuilder extends EventBus {
     const data = this.readBin(bin)
     this.emit('raw', bin)
 
-    DEBUG && logger.debug('receive data=>', JSON.stringify(data))
+    logger.debug('recevie data=>', JSON.stringify(data))
     if (data.flag === MessageFlag.App && data.type === MessageType.Shake) {
       this.appSidePort = data.port2
       logger.debug('appSidePort=>', data.port2)
@@ -954,30 +793,24 @@ export class MessageBuilder extends EventBus {
     }
   }
 
-  errorIfBleDisconnect() { }
-
   onMessage(messagePayload) {
     const payload = this.readPayload(messagePayload)
     let session = this.sessionMgr.getById(payload.traceId, payload.payloadType)
 
     if (!session) {
-      session = this.sessionMgr.newSession(payload.traceId, payload.payloadType, this)
+      session = this.sessionMgr.newSession(
+        payload.traceId,
+        payload.payloadType,
+        this,
+      )
 
-      // TODO: 需要考虑缓冲，监听回调要放到启动之前，或者没有增加监听就缓存请求
       session.on('data', (fullPayload) => {
         if (fullPayload.opCode === MessagePayloadOpCode.Finished) {
           if (fullPayload.payloadType === MessagePayloadType.Request) {
             this.emit('request', {
               request: fullPayload,
-              response: ({
-                data
-              }) => {
-                this.response({
-                  requestId: fullPayload.traceId,
-                  contentType: fullPayload.contentType,
-                  dataType: fullPayload.dataType,
-                  data
-                })
+              response: ({ data }) => {
+                this.response({ requestId: fullPayload.traceId, data })
               },
             })
           } else if (fullPayload.payloadType === MessagePayloadType.Response) {
@@ -1000,19 +833,9 @@ export class MessageBuilder extends EventBus {
     session.addChunk(payload)
   }
 
-  /**
-   * 发送请求
-   * @param {object buffer arraybuffer arraybuffer like} data 传输的数据
-   * @param {*} opts
-   * @returns
-   */
   request(data, opts) {
     const _request = () => {
-      const defaultOpts = {
-        timeout: 60000,
-        contentType: 'json',
-        dataType: 'json'
-      }
+      const defaultOpts = { timeout: 60000 }
       const requestId = genTraceId()
       const defer = Deferred()
       opts = Object.assign(defaultOpts, opts)
@@ -1022,65 +845,26 @@ export class MessageBuilder extends EventBus {
         defer.reject(error)
       }
 
-      const transact = ({
-        traceId,
-        payload,
-        dataType
-      }) => {
-        this.errorIfBleDisconnect()
-        DEBUG && logger.debug('traceId=>%d payload=>%s', traceId, payload.toString('hex'))
+      const transact = ({ traceId, payload }) => {
+        logger.debug(
+          'traceId=>%d payload=>%s',
+          traceId,
+          payload.toString('hex'),
+        )
         if (traceId === requestId) {
-          let result
-          switch (dataType) {
-            case MessagePayloadDataTypeOp.TEXT:
-              result = buf2str(payload)
-              break;
-            case MessagePayloadDataTypeOp.BIN:
-              result = payload
-              break;
-            case MessagePayloadDataTypeOp.JSON:
-              result = buf2json(payload)
-              break;
-            default: // text
-              result = buf2str(payload)
-              break;
-          }
-          DEBUG && logger.debug('request id=>%d payload=>%j', requestId, data)
-          DEBUG && logger.debug('response id=>%d payload=>%j', requestId, result)
+          const resultJson = this.buf2Json(payload)
+          logger.debug('request id=>%d payload=>%j', requestId, data)
+          logger.debug('response id=>%d payload=>%j', requestId, resultJson)
 
           this.off('response', transact)
           this.off('error', error)
-          defer.resolve(result)
+          defer.resolve(resultJson)
         }
       }
 
       this.on('response', transact)
       this.on('error', error)
-      if (Buffer.isBuffer(data)) {
-        this.sendBuf({
-          requestId,
-          buf: data,
-          type: MessagePayloadType.Request,
-          contentType: MessagePayloadDataTypeOp.BIN,
-          dataType: getDataType(opts.dataType)
-        })
-      } else if (data instanceof ArrayBuffer || ArrayBuffer.isView(data)) {
-        this.sendBuf({
-          requestId,
-          buf: Buffer.from(data),
-          type: MessagePayloadType.Request,
-          contentType: MessagePayloadDataTypeOp.BIN,
-          dataType: getDataType(opts.dataType)
-        })
-      } else {
-        this.sendJson({
-          requestId,
-          json: data,
-          type: MessagePayloadType.Request,
-          contentType: MessagePayloadDataTypeOp.JSON,
-          dataType: getDataType(opts.dataType)
-        })
-      }
+      this.sendJson({ requestId, json: data, type: MessagePayloadType.Request })
 
       let hasReturned = false
 
@@ -1090,7 +874,11 @@ export class MessageBuilder extends EventBus {
             return resolve()
           }
 
-          DEBUG && logger.error(`request timeout in ${opts.timeout}ms error=> %d data=> %j`, requestId, data)
+          logger.error(
+            `request timeout in ${opts.timeout}ms error=> %d data=> %j`,
+            requestId,
+            data,
+          )
           this.off('response', transact)
 
           reject(Error(`Timed out in ${opts.timeout}ms.`))
@@ -1106,11 +894,7 @@ export class MessageBuilder extends EventBus {
 
   requestCb(data, opts, cb) {
     const _requestCb = () => {
-      const defaultOpts = {
-        timeout: 60000,
-        contentType: 'json',
-        dataType: 'json'
-      }
+      const defaultOpts = { timeout: 60000 }
 
       if (typeof opts === 'function') {
         cb = opts
@@ -1123,65 +907,27 @@ export class MessageBuilder extends EventBus {
       let timer1 = null
       let hasReturned = false
 
-      const transact = ({
-        traceId,
-        payload,
-        dataType
-      }) => {
-        DEBUG && logger.debug('traceId=>%d payload=>%s', traceId, payload.toString('hex'))
+      const transact = ({ traceId, payload }) => {
+        logger.debug(
+          'traceId=>%d payload=>%s',
+          traceId,
+          payload.toString('hex'),
+        )
         if (traceId === requestId) {
-          let result
-          switch (dataType) {
-            case MessagePayloadDataTypeOp.TEXT:
-              result = buf2str(payload)
-              break;
-            case MessagePayloadDataTypeOp.BIN:
-              result = payload
-              break;
-            case MessagePayloadDataTypeOp.JSON:
-              result = buf2json(payload)
-              break;
-            default: // text
-              result = buf2str(payload)
-              break;
-          }
-          DEBUG && logger.debug('request id=>%d payload=>%j', requestId, data)
-          DEBUG && logger.debug('response id=>%d payload=>%j', requestId, result)
+          const resultJson = this.buf2Json(payload)
+          logger.debug('request id=>%d payload=>%j', requestId, data)
+          logger.debug('response id=>%d payload=>%j', requestId, resultJson)
 
+          this.off('response', transact)
           timer1 && clearTimeout(timer1)
           timer1 = null
-          this.off('response', transact)
           hasReturned = true
-          cb(null, result)
+          cb(null, resultJson)
         }
       }
 
       this.on('response', transact)
-      if (Buffer.isBuffer(data)) {
-        this.sendBuf({
-          requestId,
-          buf: data,
-          type: MessagePayloadType.Request,
-          contentType: MessagePayloadDataTypeOp.BIN,
-          dataType: getDataType(opts.dataType)
-        })
-      } else if (data instanceof ArrayBuffer || ArrayBuffer.isView(data)) {
-        this.sendBuf({
-          requestId,
-          buf: Buffer.from(data),
-          type: MessagePayloadType.Request,
-          contentType: MessagePayloadDataTypeOp.BIN,
-          dataType: getDataType(opts.dataType)
-        })
-      } else {
-        this.sendJson({
-          requestId,
-          json: data,
-          type: MessagePayloadType.Request,
-          contentType: MessagePayloadDataTypeOp.JSON,
-          dataType: getDataType(opts.dataType)
-        })
-      }
+      this.sendJson({ requestId, json: data, type: MessagePayloadType.Request })
 
       timer1 = setTimeout(() => {
         timer1 = null
@@ -1189,7 +935,11 @@ export class MessageBuilder extends EventBus {
           return
         }
 
-        DEBUG && logger.error(`request time out in ${opts.timeout}ms error=>%d data=>%j`, requestId, data)
+        logger.error(
+          `request time out in ${opts.timeout}ms error=>%d data=>%j`,
+          requestId,
+          data,
+        )
         this.off('response', transact)
         cb(Error(`Timed out in ${opts.timeout}ms.`))
       }, opts.timeout)
@@ -1198,64 +948,19 @@ export class MessageBuilder extends EventBus {
     return this.waitingShakePromise.then(_requestCb)
   }
 
-  /**
-   * 相应接口给当前请求
-   * @param {obj} param0
-   */
-  response({
-    requestId,
-    contentType,
-    dataType,
-    data
-  }) {
-    if (MessagePayloadDataTypeOp.BIN === dataType) {
-      this.sendBuf({
-        requestId,
-        buf: data,
-        type: MessagePayloadType.Response,
-        contentType,
-        dataType,
-      })
-    } else {
-      this.sendJson({
-        requestId,
-        json: data,
-        type: MessagePayloadType.Response,
-        contentType,
-        dataType,
-      })
-    }
+  response({ requestId, data }) {
+    this.sendJson({ requestId, json: data, type: MessagePayloadType.Response })
   }
 
-  /**
-   * call 模式调用接口到伴生服务
-   * @param {json | buffer} data
-   * @returns
-   */
   call(data) {
     return this.waitingShakePromise.then(() => {
-      if (Buffer.isBuffer(data)) {
-        return this.sendBuf({
-          buf: data,
-          type: MessagePayloadType.Notify,
-          contentType: MessagePayloadDataTypeOp.BIN,
-          dataType: MessagePayloadDataTypeOp.EMPTY
-        })
-      } else if (data instanceof ArrayBuffer || ArrayBuffer.isView(data)) {
-        return this.sendBuf({
-          buf: Buffer.from(data),
-          type: MessagePayloadType.Notify,
-          contentType: MessagePayloadDataTypeOp.BIN,
-          dataType: MessagePayloadDataTypeOp.EMPTY
-        })
-      } else {
-        return this.sendJson({
-          json: data,
-          type: MessagePayloadType.Notify,
-          contentType: MessagePayloadDataTypeOp.JSON,
-          dataType: MessagePayloadDataTypeOp.EMPTY
-        })
-      }
+      return this.sendJson({ json: data, type: MessagePayloadType.Notify })
+    })
+  }
+
+  log(str) {
+    return this.waitingShakePromise.then(() => {
+      return this.sendLog(str)
     })
   }
 }

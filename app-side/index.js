@@ -1,13 +1,17 @@
 import {MessageBuilder} from '../shared/message'
 import {completeTask, completeWholeTask, fetchLists, fetchTasksForList} from "./google-api";
 import {TODO_MSG} from "../utils/constants";
+import {kpayConfig} from '../shared/kpay-config';
+import kpayAppSide from 'kpay-amazfit/app-side';
 
 const messageBuilder = new MessageBuilder()
+const kpay = new kpayAppSide({...kpayConfig, messageBuilder});
 
 
 AppSideService({
     onInit() {
         console.log('app side service invoke onInit')
+        kpay.init();
         messageBuilder.listen(() => {
         })
 
@@ -22,41 +26,42 @@ AppSideService({
 
         messageBuilder.on('request', (ctx) => {
             const payload = messageBuilder.buf2Json(ctx.request.payload)
-
-            switch (payload.method) {
-                case TODO_MSG.GET_LISTS:
-                    fetchLists().then(lists => {
-                        ctx.response({
-                            data: {result: lists},
+            if (!kpay.onRequest(payload)) {
+                switch (payload.method) {
+                    case TODO_MSG.GET_LISTS:
+                        fetchLists().then(lists => {
+                            ctx.response({
+                                data: {result: lists},
+                            })
                         })
-                    })
-                    break;
+                        break;
 
-                case TODO_MSG.GET_TASKS_FOR_LIST:
-                    fetchTasksForList(payload.listId).then(tasks => {
-                        ctx.response({
-                            data: {result: tasks},
+                    case TODO_MSG.GET_TASKS_FOR_LIST:
+                        fetchTasksForList(payload.listId).then(tasks => {
+                            ctx.response({
+                                data: {result: tasks},
+                            })
                         })
-                    })
-                    break;
+                        break;
 
-                case TODO_MSG.COMPLETE_TASK:
-                    completeTask(payload.listId, payload.task).then(tasks => {
-                        ctx.response({
-                            data: {result: tasks},
+                    case TODO_MSG.COMPLETE_TASK:
+                        completeTask(payload.listId, payload.task).then(tasks => {
+                            ctx.response({
+                                data: {result: tasks},
+                            })
                         })
-                    })
-                    break;
+                        break;
 
-                default:
-                    console.warn(`unknown message type ${payload.method}!`)
+                    default:
+                        console.warn(`unknown message type ${payload.method}!`)
+                }
             }
-
         })
 
     }, onRun() {
         console.log('app side service invoke onRun')
     }, onDestroy() {
+        kpay.destroy();
         console.log('app side service invoke onDestroy')
     }
 })

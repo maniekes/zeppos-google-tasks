@@ -9,6 +9,10 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "zeppos-device-types-v1": "^1.0.0"
+    "zeppos-device-types-v1": "^1.0.0",
+    "prettier": "2.7.1"
+  },
+  "dependencies": {
+    "kpay-amazfit": "^1.0.0"
   }
 }
