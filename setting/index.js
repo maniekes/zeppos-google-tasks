@@ -3,13 +3,7 @@ import {GOOGLE_API} from "../utils/constants";
 AppSettingsPage({
     state: {
         test: 'dupa',
-        auth: {
-            "access_token": "ya29.a0AVvZVsr3ax5gcithlrdT2bOabixC6OGGVRwNakjkpx2rBXVi4vh-Dqy8LA-NoToi4fFVy2chTUFNd9v0B3_qKKdVeOCDU-N96unHffiN5mjFIXM50agMKv-yX3WfqxjvSgIq_ahUlpSt_-GRgpQVcDsPmx2uaCgYKAWwSARMSFQGbdwaISsMEbkesi57dyczIP6DtnA0163",
-            "expires_in": 3599,
-            "refresh_token": "1//0cJ9K5qzylH4ICgYIARAAGAwSNwF-L9Irqi2p7Q3b3NyS3eFhUvKPez_68EtTO4v1n3W8qSUAlmCgXiJlhEQX0pq1JDkBV1fvqMc",
-            "scope": "https://www.googleapis.com/auth/tasks",
-            "token_type": "Bearer",
-        },
+        auth: {},
         props: {}
     },
     setState(props) {

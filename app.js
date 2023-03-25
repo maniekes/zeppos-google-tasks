@@ -6,7 +6,7 @@ import kpayApp from 'kpay-amazfit/app';
 const logger = DeviceRuntimeCore.HmLogger.getLogger('zeppos-google-tasks');
 const appDevicePort = 20;
 const appSidePort = 0;
-const appId = 692137;
+const appId = 1019779;
 const messageBuilder = new MessageBuilder({
   appId,
   appDevicePort,
