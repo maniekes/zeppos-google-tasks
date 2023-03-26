@@ -3,7 +3,6 @@ import {GOOGLE_API} from "../utils/constants";
 AppSettingsPage({
     state: {
         test: 'dupa',
-        auth: {},
         props: {}
     },
     setState(props) {
@@ -12,11 +11,11 @@ AppSettingsPage({
 
     build(props) {
         this.setState(props);
-        const tokenText = Text({}, this.state.props.settingsStorage.getItem('tokenAuth'))
-        const apiCallDebugText = Text({}, this.state.props.settingsStorage.getItem('apiCallDebug'))
-        const lastApiCallText = Text({}, this.state.props.settingsStorage.getItem('apiCallResult'))
-        const debugText = Text({}, this.state.props.settingsStorage.getItem('debugState1'))
-        const extraDebugText = Text({}, this.state.props.settingsStorage.getItem('debugState2'))
+        const tokenText = Text({}, this.settingAsString('tokenAuth'));
+        const apiCallDebugText = Text({}, this.settingAsString('apiCallDebug'));
+        const lastApiCallText = Text({}, this.settingAsString('apiCallResult'));
+        const debugText = Text({}, this.settingAsString('debugState1'));
+        const extraDebugText = Text({}, this.settingAsString('debugState2'));
         // override token on PC because OAUTH not working there
         const overrideAuthButton = (GOOGLE_API.overrideRefreshToken) ? Button({
             label: 'Override RefreshToken',
@@ -65,4 +64,8 @@ AppSettingsPage({
             Section({title: 'Debug2:', ...s}, [extraDebugText]),
         ])
     },
+    settingAsString(name) {
+        let o = this.state.props.settingsStorage.getItem(name);
+        return typeof o == 'object' ? JSON.stringify(o) : o;
+    }
 })

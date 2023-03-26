@@ -42,7 +42,7 @@ Page({
         }).then(({result}) => {
             if (result.error || result === 'ERROR') {
                 hmUI.showToast({
-                    text: 'error'
+                    text: result.error ? result.error : 'error'
                 })
                 logger.info(JSON.stringify(result))
             } else {
@@ -57,7 +57,7 @@ Page({
     },
 
     scrollListItemClick(tthis, list, index) {
-        if(index===0 || index === tthis.state.items.length+1) {
+        if (index === 0 || index === tthis.state.items.length + 1) {
             return
         }
         logger.info('item clickedg')

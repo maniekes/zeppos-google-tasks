@@ -78,7 +78,7 @@ Page({
         }).then(({result}) => {
             if (result.error || result === 'ERROR') {
                 hmUI.showToast({
-                    text: 'error'
+                    text: result.error ? result.error : 'error'
                 })
                 logger.info(JSON.stringify(result))
             } else {
@@ -99,7 +99,7 @@ Page({
         }).then(({result}) => {
             if (result.error || result === 'ERROR') {
                 hmUI.showToast({
-                    text: 'error'
+                    text: result.error ? result.error : 'error'
                 })
                 logger.info(JSON.stringify(result))
             } else {
