@@ -1,3 +1,5 @@
+import {APP_VERSION} from "../utils/constants";
+
 export const initList = (tthis, callback) => {
     const itemConfig = buildItemConfig()
     return hmUI.createWidget(hmUI.widget.SCROLL_LIST, {
@@ -98,4 +100,8 @@ export const LIST_HEADER = {
     CACHE: 'cache',
     ONLINE: 'online',
     UPDATING: 'updating'
+}
+
+export const buildFooterTitle = () => {
+    return "Google Tasks v "+APP_VERSION;
 }

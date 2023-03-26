@@ -1,5 +1,24 @@
 import {GOOGLE_API} from "../utils/constants";
 
+const buildInstruction = (s) => {
+    return View({...s}, [
+        tb('Follow those steps to request Google Tasks API Token:'),
+        t('(you can do this everytime you see auth error on watch)'),
+        t('0. See if google api already have valid token(click on "Test Google API" button and check if section "Last api call" starts with "items" and not with "error")'),
+        t('1. Click on "Click here to authorize" on top of this page'),
+        t('2. You will be redirected to google authentication link in your web browser. follow steps on screen and allow access'),
+        t('3. At the end you will be redirected back to this screen'),
+        t('4. Click on "Test Google API" button (see point 0)')
+    ]);
+}
+
+const t = (txt, s) => {
+    return Text({paragraph: true, ...s}, txt);
+}
+const tb = (txt, s) => {
+    return Text({paragraph: true, bold: true, ...s}, txt);
+}
+
 AppSettingsPage({
     state: {
         test: 'dupa',
@@ -55,17 +74,23 @@ AppSettingsPage({
         });
         const s = {style: {display: 'block', marginBottom: '20px'}};
         return View({}, [
-            Section({title: 'OAUTH:', ...s}, [auth]),
-            Section({...s}, [testApiButton, overrideAuthButton]),
-            Section({title: 'Current token:', ...s}, [tokenText]),
-            Section({title: 'Api call debug:', ...s}, [apiCallDebugText]),
-            Section({title: 'Last api call:', ...s}, [lastApiCallText]),
-            Section({title: 'Debug1:', ...s}, [debugText]),
-            Section({title: 'Debug2:', ...s}, [extraDebugText]),
+            View({...s}, [tb("Oauth:"), auth]),
+            View({...s}, [testApiButton, overrideAuthButton]),
+            buildInstruction(s),
+            tb('Current token:'),
+            t(this.settingAsString('tokenAuth'), s),
+            tb('Api call debug:'),
+            t(this.settingAsString('apiCallDebug'), s),
+            tb('Last api call:'),
+            t(this.settingAsString('apiCallResult'), s),
+            tb('Debug1:'),
+            t(this.settingAsString('debugState1'), s),
+            tb('Debug2:'),
+            t(this.settingAsString('debugState2'), s)
         ])
     },
     settingAsString(name) {
         let o = this.state.props.settingsStorage.getItem(name);
         return typeof o == 'object' ? JSON.stringify(o) : o;
-    }
+    },
 })

@@ -1,6 +1,6 @@
 import {TODO_MSG} from "../utils/constants";
 import {readListsFromFile, writeListsToFile} from "../utils/fs";
-import {beautifyElement, initList, LIST_HEADER, updateList} from "./common.page";
+import {beautifyElement, buildFooterTitle, initList, LIST_HEADER, updateList} from "./common.page";
 
 const {messageBuilder} = getApp()._options.globalData
 
@@ -10,7 +10,7 @@ Page({
     state: {
         header: {title: 'Lists', mode: LIST_HEADER.OFFLINE},
         items: [{displayTitle: 'loading'}],
-        footer: {title: 'fajnie, nie?'},
+        footer: {title: buildFooterTitle()},
         list: null,
         title: null,
         savedLists: {}
