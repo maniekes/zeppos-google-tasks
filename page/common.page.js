@@ -67,8 +67,9 @@ const buildItemConfig = () => {
             type_id: 3,
             item_bg_color: 0x000000,
             item_bg_radius: 20,
-            text_view: [{x: 0, y: 15, w: 454, h: 40, key: 'title', color: 0xffffff, text_size: 20}],
-            text_view_count: 1,
+            text_view: [{x: 0, y: 15, w: 454, h: 40, key: 'title', color: 0xffffff, text_size: 20},
+                {x: 0, y: 45, w: 454, h: 40, key: 'license', color: 0xffffff, text_size: 20}],
+            text_view_count: 2,
             item_height: 160
         }]
 }
@@ -85,7 +86,6 @@ export const beautifyElement = element => {
         const leftSpace = left === -1 ? 0 : left
         const rightSpace = left === -1 ? element.title.length : right
         const bestMiddleSpaceCut = Math.abs(leftSpace - middle) < Math.abs(rightSpace - middle) ? leftSpace : rightSpace
-        console.log([0, leftSpace, rightSpace, bestMiddleSpaceCut, element.title.length])
         if (Math.abs(bestMiddleSpaceCut - middle) > max_length) {
             element.displayTitle = `${element.title.substring(0, middle)}\n${element.title.substring(middle)}`
         } else {
@@ -103,5 +103,8 @@ export const LIST_HEADER = {
 }
 
 export const buildFooterTitle = () => {
-    return "Google Tasks v "+APP_VERSION;
+    return "Google Tasks v " + APP_VERSION;
+}
+export const buildFooterLicense = (k) => {
+    return "license: " + k.isLicensed();
 }

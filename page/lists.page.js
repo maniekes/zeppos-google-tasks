@@ -1,8 +1,8 @@
 import {TODO_MSG} from "../utils/constants";
 import {readListsFromFile, writeListsToFile} from "../utils/fs";
-import {beautifyElement, buildFooterTitle, initList, LIST_HEADER, updateList} from "./common.page";
+import {beautifyElement, buildFooterLicense, buildFooterTitle, initList, LIST_HEADER, updateList} from "./common.page";
 
-const {messageBuilder} = getApp()._options.globalData
+const {messageBuilder, kpay} = getApp()._options.globalData
 
 const logger = DeviceRuntimeCore.HmLogger.getLogger('zeppos-google-tasks')
 
@@ -10,7 +10,7 @@ Page({
     state: {
         header: {title: 'Lists', mode: LIST_HEADER.OFFLINE},
         items: [{displayTitle: 'loading'}],
-        footer: {title: buildFooterTitle()},
+        footer: {title: buildFooterTitle(), license: buildFooterLicense(kpay)},
         list: null,
         title: null,
         savedLists: {}
