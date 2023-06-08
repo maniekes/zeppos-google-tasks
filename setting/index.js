@@ -1,4 +1,5 @@
 import {GOOGLE_API} from "../utils/constants";
+import {requestToken} from "../app-side/google-api";
 
 const buildInstruction = (s) => {
     return View({...s}, [
@@ -66,6 +67,15 @@ AppSettingsPage({
                 token.expiry_date = d
                 this.state.props.settingsStorage.setItem('tokenAuth', JSON.stringify(token))
                 console.log(props)
+            },
+            onReturn: async (ret) => {
+                console.log(ret);
+                let token = await requestToken(ret);
+                let d = new Date();
+                d.setTime(d.getTime() + token.expires_in * 1000)
+                token.requested_date = new Date()
+                token.expiry_date = d
+                this.state.props.settingsStorage.setItem('tokenAuth', JSON.stringify(token))
             }
         });
         const enableDebug = Toggle({label: 'enable debug', settingsKey: 'debug_enabled'});

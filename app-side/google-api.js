@@ -1,4 +1,4 @@
-import {GOOGLE_API_CLIENT_ID, GOOGLE_API_CLIENT_SECRET} from "../env";
+import {GOOGLE_API_CLIENT_ID, GOOGLE_API_CLIENT_SECRET, GOOGLE_API_REDIRECT_URI} from "../env";
 
 export const fetchLists = async () => {
     return getGoogleEndpoint('https://tasks.googleapis.com/tasks/v1/users/@me/lists?fields=items.id,items.title')
@@ -96,5 +96,19 @@ const refreshToken = async () => {
     settings.settingsStorage.setItem('debugState1', 'calling refreshToken4')
     settings.settingsStorage.setItem('tokenAuth', JSON.stringify(authToken))
     return authToken
+}
+
+export const requestToken = async (authResponse) => {
+    const data = await fetch('https://oauth2.googleapis.com/token', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded'
+        },
+        body: `grant_type=authorization_code&client_id=${GOOGLE_API_CLIENT_ID}&client_secret=${GOOGLE_API_CLIENT_SECRET}&redirect_uri=${GOOGLE_API_REDIRECT_URI}&code=${authResponse.code}`
+    }).then(response => {
+        return response.json();
+    });
+    console.log(data);
+    return data;
 }
 
