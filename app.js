@@ -27,7 +27,7 @@ App({
     logger.log('kpay license: ' + kpay.isLicensed())
     if (!kpay.isLicensed()) {
       const timer1 = timer.createTimer(
-          5000,
+          10000,
           0,
           function (option) {
             //callback
