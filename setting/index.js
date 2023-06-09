@@ -48,6 +48,12 @@ AppSettingsPage({
                 this.state.props.settingsStorage.setItem('LISTS', 123)
             }
         })
+        const removeTokenButton = Button({
+            label: 'Remove API Token',
+            onClick: () => {
+                this.state.props.settingsStorage.setItem('tokenAuth', '{}')
+            }
+        })
         const auth = Auth({
             label: 'Click here to authorize',
             authorizeUrl: 'https://accounts.google.com/o/oauth2/v2/auth',
@@ -83,7 +89,7 @@ AppSettingsPage({
         const s = {style: {display: 'block', marginBottom: '20px'}};
         return View({style: {maxWidth: '100%'}}, [
             View({...s}, [tb("Oauth:"), auth]),
-            View({...s}, [testApiButton, overrideAuthButton]),
+            View({...s}, [testApiButton, removeTokenButton, overrideAuthButton]),
             buildInstruction(s),
             debug && tb('Current token:'),
             debug && t(this.settingAsString('tokenAuth'), s),
