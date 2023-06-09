@@ -7,7 +7,7 @@
       "name": "1.0.2"
     },
     "appId": 1019779,
-    "appName": "Google Tasks",
+    "appName": "GTasks",
     "icon": "icon.png",
     "vender": "R. Klimonda",
     "description": "View and complete your Google Tasks on watch"
@@ -68,7 +68,7 @@
   "permissions": [],
   "i18n": {
     "en-US": {
-      "appName": "Google Tasks"
+      "appName": "GTasks"
     }
   },
   "defaultLanguage": "en-US",
