@@ -1,11 +1,10 @@
 import {MessageBuilder} from '../shared/message'
-import {completeTask, completeWholeTask, fetchLists, fetchTasksForList} from "./google-api";
-import {TODO_MSG} from "../utils/constants";
-import {kpayConfig} from '../shared/kpay-config';
+import {completeTask, fetchLists, fetchTasksForList} from "./google-api";
+import {KPAY_CONFIG, TODO_MSG} from "../utils/constants";
 import kpayAppSide from 'kpay-amazfit/app-side';
 
 const messageBuilder = new MessageBuilder()
-const kpay = new kpayAppSide({...kpayConfig, messageBuilder});
+const kpay = new kpayAppSide({...KPAY_CONFIG, messageBuilder});
 
 
 AppSideService({

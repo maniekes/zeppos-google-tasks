@@ -1,7 +1,7 @@
 import './shared/device-polyfill';
 import { MessageBuilder } from './shared/message';
-import { kpayConfig } from './shared/kpay-config';
 import kpayApp from 'kpay-amazfit/app';
+import {KPAY_CONFIG} from "./utils/constants";
 
 const logger = DeviceRuntimeCore.HmLogger.getLogger('zeppos-google-tasks');
 const appDevicePort = 20;
@@ -13,7 +13,7 @@ const messageBuilder = new MessageBuilder({
   appSidePort,
 });
 
-const kpay = new kpayApp({ ...kpayConfig, dialogPath: 'page/kpay/index.page', messageBuilder });
+const kpay = new kpayApp({ ...KPAY_CONFIG, dialogPath: 'page/kpay/index.page', messageBuilder });
 
 App({
   globalData: {
@@ -24,6 +24,18 @@ App({
     logger.log('app onCreate invoked');
     messageBuilder.connect();
     kpay.init();
+    logger.log('kpay license: ' + kpay.isLicensed())
+    if (!kpay.isLicensed()) {
+      const timer1 = timer.createTimer(
+          5000,
+          0,
+          function (option) {
+            //callback
+            kpay.startPurchase();
+          },
+          { hour: 0, minute: 15, second: 30 }
+      )
+    }
   },
   onDestroy() {
     logger.log('app onDestroy invoked');

@@ -53,7 +53,9 @@ Page({
                 updateList(this.state.list, this.state.header, this.state.items, this.state.footer)
                 writeListsToFile(this.state.savedLists)
             }
-        }).catch((err) => logger.error(err))
+        }).catch((err) => {
+            logger.error(err)
+        })
     },
 
     scrollListItemClick(tthis, list, index) {

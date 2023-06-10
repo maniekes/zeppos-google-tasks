@@ -5,14 +5,21 @@ export const GOOGLE_API = {
     clientSecret: GOOGLE_API_CLIENT_SECRET,
     scope: 'https://www.googleapis.com/auth/tasks',
     // redirectUri: 'https://zepp-os-staging.zepp.com/app-settings/redirect.html',
-    // overrideRefreshToken: '1//0cEbiAJV6ibq9CgYIARAAGAwSNwF-L9IrbPK0EOcfuX-k8xcovZkeNoNXyWRho6b57eYOdzZBFe_NPKtTS3Oav_OVaRBA7N-7304',
+    // overrideRefreshToken: '1//0cXAuWxfHeSPaCgYIARAAGAwSNwF-L9IrLBjvKiStbtDna8eK1famoGGR_LFnYAN-FT-4-WhUrwYJkqdKXJ08PT2pL_o-2XyAG44',
     forceAsk: true
 }
 
 export const TODO_MSG = {
     GET_LISTS: 'GET_LISTS',
     GET_TASKS_FOR_LIST: 'GET_TASKS_FOR_LIST',
-    COMPLETE_TASK: 'COMPLETE_TASK'}
+    COMPLETE_TASK: 'COMPLETE_TASK'
+}
+
+export const KPAY_CONFIG = {
+    id: 1234567890,
+    trialEnabled: true,
+    testMode: false,
+}
 
 export const TODO_LISTS_FILE = 'fs_todo_lists'
 export const TODO_LISTS_TASKS_FILE_PREFIX = 'fs_todo_lists_'

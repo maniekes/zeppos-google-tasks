@@ -8,7 +8,8 @@ const buildInstruction = (s) => {
         t('1. Click on "Click here to authorize" on top of this page'),
         t('2. You will be redirected to google authentication link in your web browser. follow steps on screen and allow access'),
         t('3. At the end you will be redirected back to this screen'),
-        t('4. Click on "Test Google API" button (see point 0)')
+        t('4. Click on "Test Google API" button (see point 0)'),
+        t('5. if you see any error, click enable debug on the bottom, take screenshot and send to me ( rafal@klimonda.pl )')
     ]);
 }
 
@@ -30,11 +31,6 @@ AppSettingsPage({
 
     build(props) {
         this.setState(props);
-        const tokenText = Text({}, this.settingAsString('tokenAuth'));
-        const apiCallDebugText = Text({}, this.settingAsString('apiCallDebug'));
-        const lastApiCallText = Text({}, this.settingAsString('apiCallResult'));
-        const debugText = Text({}, this.settingAsString('debugState1'));
-        const extraDebugText = Text({}, this.settingAsString('debugState2'));
         // override token on PC because OAUTH not working there
         const overrideAuthButton = (GOOGLE_API.overrideRefreshToken) ? Button({
             label: 'Override RefreshToken',
@@ -72,21 +68,24 @@ AppSettingsPage({
                 console.log(props)
             }
         });
+        const enableDebug = Toggle({label: 'enable debug', settingsKey: 'debug_enabled'});
+        const debug = this.state.props.settingsStorage.getItem('debug_enabled') === 'true';
         const s = {style: {display: 'block', marginBottom: '20px'}};
-        return View({}, [
+        return View({style: {maxWidth: '100%'}}, [
             View({...s}, [tb("Oauth:"), auth]),
             View({...s}, [testApiButton, overrideAuthButton]),
             buildInstruction(s),
-            tb('Current token:'),
-            t(this.settingAsString('tokenAuth'), s),
-            tb('Api call debug:'),
-            t(this.settingAsString('apiCallDebug'), s),
+            debug && tb('Current token:'),
+            debug && t(this.settingAsString('tokenAuth'), s),
+            debug && tb('Api call debug:'),
+            debug && t(this.settingAsString('apiCallDebug'), s),
             tb('Last api call:'),
             t(this.settingAsString('apiCallResult'), s),
-            tb('Debug1:'),
-            t(this.settingAsString('debugState1'), s),
-            tb('Debug2:'),
-            t(this.settingAsString('debugState2'), s)
+            debug && tb('Debug1:'),
+            debug && t(this.settingAsString('debugState1'), s),
+            debug && tb('Debug2:'),
+            debug && t(this.settingAsString('debugState2'), s),
+            enableDebug
         ])
     },
     settingAsString(name) {

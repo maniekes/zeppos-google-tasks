@@ -23,7 +23,10 @@ const getGoogleEndpoint = async (url) => {
             }
         })
         settings.settingsStorage.setItem('apiCallResult', '2' + JSON.stringify(data))
-        return (typeof data == 'string') ? JSON.parse(data) : data
+        const dat = (typeof data == 'string') ? JSON.parse(data) : data
+        if (dat.error) {
+            return {error: 'error calling google api. please go to settings'}
+        } else return dat;
     } catch (error) {
         settings.settingsStorage.setItem('apiCallResult', JSON.stringify(error))
         return {error: 'error calling google api. please go to settings'}
@@ -47,7 +50,10 @@ const putGoogleEndpoint = async (url, payload) => {
             body: typeof payload === 'object' ? JSON.stringify(payload) : payload
         })
         settings.settingsStorage.setItem('apiCallResult', '2' + JSON.stringify(data))
-        return (typeof data == 'string') ? JSON.parse(data) : data
+        const dat = (typeof data == 'string') ? JSON.parse(data) : data
+        if (dat.error) {
+            return {error: 'error calling google api. please go to settings'}
+        } else return dat;
     } catch (error) {
         settings.settingsStorage.setItem('apiCallResult', JSON.stringify(error))
         return {error: 'error calling google api. please go to settings'}
