@@ -15,12 +15,6 @@ export const TODO_MSG = {
     COMPLETE_TASK: 'COMPLETE_TASK'
 }
 
-export const KPAY_CONFIG = {
-    id: 1234567890,
-    trialEnabled: true,
-    testMode: false,
-}
-
 export const TODO_LISTS_FILE = 'fs_todo_lists'
 export const TODO_LISTS_TASKS_FILE_PREFIX = 'fs_todo_lists_'
 export const APP_VERSION = '1.0.2'

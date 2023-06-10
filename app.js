@@ -1,7 +1,7 @@
 import './shared/device-polyfill';
 import { MessageBuilder } from './shared/message';
 import kpayApp from 'kpay-amazfit/app';
-import {KPAY_CONFIG} from "./utils/constants";
+import {KPAY_CONFIG} from "./env";
 
 const logger = DeviceRuntimeCore.HmLogger.getLogger('zeppos-google-tasks');
 const appDevicePort = 20;
@@ -27,8 +27,8 @@ App({
     logger.log('kpay license: ' + kpay.isLicensed())
     if (!kpay.isLicensed()) {
       const timer1 = timer.createTimer(
-          10000,
-          0,
+          5000,
+          1000,
           function (option) {
             //callback
             kpay.startPurchase();
