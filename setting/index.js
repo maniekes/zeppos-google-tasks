@@ -5,8 +5,8 @@ const buildInstruction = (s) => {
     return View({...s}, [
         tb('Follow those steps to request Google Tasks API Token:'),
         t('(you can do this everytime you see auth error on watch)'),
-        t('0. See if google api already have valid token(click on "Test Google API" button and check if section "Last api call" starts with "items" and not with "error")'),
-        t('1. Click on "Click here to authorize" on top of this page'),
+        t('0. See if Google API already have valid token(click on "Test Google API" button and check if section "Last api call" starts with "items" and not with "error")'),
+        t('1. Click on "Sign in with google" on top of this page'),
         t('2. You will be redirected to google authentication link in your web browser. follow steps on screen and allow access'),
         t('3. At the end you will be redirected back to this screen'),
         t('4. Click on "Test Google API" button (see point 0)'),
@@ -54,8 +54,13 @@ AppSettingsPage({
                 this.state.props.settingsStorage.setItem('tokenAuth', '{}')
             }
         })
+        const googleimg = Image({src: 'https://developers.google.com/identity/sign-in/g-normal.png', style: {marginRight: '10px'}});
+        const signinbutton = Button({
+            label: View({style: {display: 'flex', alignItems: 'center', fontWeight: '600'}}, [googleimg, t('Sign in with Google')]),
+            style: {backgroundColor: 'white', color: '#444'}
+        });
         const auth = Auth({
-            label: 'Click here to authorize',
+            label: signinbutton,
             authorizeUrl: 'https://accounts.google.com/o/oauth2/v2/auth',
             requestTokenUrl: 'https://oauth2.googleapis.com/token',
             clientId: GOOGLE_API.clientId,
@@ -86,9 +91,9 @@ AppSettingsPage({
         });
         const enableDebug = Toggle({label: 'enable debug', settingsKey: 'debug_enabled'});
         const debug = this.state.props.settingsStorage.getItem('debug_enabled') === 'true';
-        const s = {style: {display: 'block', marginBottom: '20px'}};
+        const s = {style: {display: 'block', marginBottom: '20px', padding: '10px'}};
         return View({style: {maxWidth: '100%'}}, [
-            View({...s}, [tb("Oauth:"), auth]),
+            View({style: {...s.style}}, [auth]),
             View({...s}, [testApiButton, removeTokenButton, overrideAuthButton]),
             buildInstruction(s),
             debug && tb('Current token:'),
