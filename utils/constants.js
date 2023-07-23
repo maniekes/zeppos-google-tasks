@@ -17,4 +17,4 @@ export const TODO_MSG = {
 
 export const TODO_LISTS_FILE = 'fs_todo_lists'
 export const TODO_LISTS_TASKS_FILE_PREFIX = 'fs_todo_lists_'
-export const APP_VERSION = '1.0.3'
+export const APP_VERSION = '1.0.4'
