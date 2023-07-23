@@ -106,7 +106,7 @@ AppSettingsPage({
         });
         const enableDebug = Toggle({label: 'enable debug', settingsKey: 'debug_enabled'});
         const debug = this.state.props.settingsStorage.getItem('debug_enabled') === 'true';
-        const s = {style: {display: 'block', marginBottom: '20px', padding: '10px'}};
+        const s = {style: {display: 'block', marginBottom: '20px', padding: '10px', wordBreak: 'break-word'}};
         return View({style: {maxWidth: '100%'}}, [
             View({style: {...s.style}}, [auth]),
             View({...s}, [testApiButton, removeTokenButton, overrideAuthButton]),
@@ -147,6 +147,6 @@ AppSettingsPage({
     },
     settingAsString(name) {
         let o = this.state.props.settingsStorage.getItem(name);
-        return typeof o == 'object' ? JSON.stringify(o) : o;
+        return typeof o == 'object' ? JSON.stringify(o, null, 1) : o;
     },
 })
