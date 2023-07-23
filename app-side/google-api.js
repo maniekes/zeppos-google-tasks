@@ -16,20 +16,28 @@ export const completeTask = async (listId, task) => {
 const getGoogleEndpoint = async (url) => {
     try {
         const authToken = await getAuthToken()
-        settings.settingsStorage.setItem('apiCallDebug', '1' + JSON.stringify(authToken))
+        setSetting('apiCallDebug', authToken);
         const {body: data} = await fetch({
             url: url, method: 'GET', headers: {
                 'Authorization': `Bearer ${authToken.access_token}`
             }
         })
-        settings.settingsStorage.setItem('apiCallResult', '2' + JSON.stringify(data))
+        setSetting('apiCallResult', data);
         const dat = (typeof data == 'string') ? JSON.parse(data) : data
         if (dat.error) {
             return {error: 'error calling google api. please go to settings'}
         } else return dat;
     } catch (error) {
-        settings.settingsStorage.setItem('apiCallResult', JSON.stringify(error))
+        setSetting('apiCallResult', error);
         return {error: 'error calling google api. please go to settings'}
+    }
+}
+
+const setSetting = (name, value) => {
+    if (typeof value == 'object') {
+        settings.settingsStorage.setItem(name, JSON.stringify(value));
+    } else {
+        settings.settingsStorage.setItem(name, value);
     }
 }
 
@@ -39,7 +47,7 @@ const getGoogleEndpoint = async (url) => {
 const putGoogleEndpoint = async (url, payload) => {
     try {
         const authToken = await getAuthToken()
-        settings.settingsStorage.setItem('apiCallDebug', '1' + url)
+        setSetting('apiCallDebug', url);
         const {body: data} = await fetch({
             url: url,
             method: 'PUT',
@@ -49,13 +57,13 @@ const putGoogleEndpoint = async (url, payload) => {
             },
             body: typeof payload === 'object' ? JSON.stringify(payload) : payload
         })
-        settings.settingsStorage.setItem('apiCallResult', '2' + JSON.stringify(data))
+        setSetting('apiCallDebug', data);
         const dat = (typeof data == 'string') ? JSON.parse(data) : data
         if (dat.error) {
             return {error: 'error calling google api. please go to settings'}
         } else return dat;
     } catch (error) {
-        settings.settingsStorage.setItem('apiCallResult', JSON.stringify(error))
+        setSetting('apiCallResult', error);
         return {error: 'error calling google api. please go to settings'}
     }
 }
@@ -64,20 +72,21 @@ const getAuthToken = async () => {
     let authToken = JSON.parse(settings.settingsStorage.getItem('tokenAuth'));
     console.info('token from settings:')
     console.info(authToken)
+    setSetting('debugState1', 'calling getAuthToken0');
     settings.settingsStorage.setItem('debugState1', 'calling getAuthToken0')
     if (authToken.expiry_date === null || authToken.expiry_date < new Date().toISOString()) {
         console.log(`refreshing tocken because ${authToken?.expiry_date} and ${Date()}`)
         return await refreshToken()
     }
-    settings.settingsStorage.setItem('debugState1', 'calling getAuthToken5')
+    setSetting('debugState1', 'calling getAuthToken5');
     return authToken;
 }
 
 const refreshToken = async () => {
     console.log('refreshing token')
-    settings.settingsStorage.setItem('debugState1', 'calling refreshToken1')
+    setSetting('debugState1', 'calling refreshToken1');
     const authToken = JSON.parse(settings.settingsStorage.getItem('tokenAuth'));
-    settings.settingsStorage.setItem('debugState1', 'calling refreshToken2')
+    setSetting('debugState1', 'calling refreshToken2');
     const {body: data} = await fetch({
         url: 'https://oauth2.googleapis.com/token',
         method: 'POST',
@@ -86,15 +95,15 @@ const refreshToken = async () => {
         },
         body: `grant_type=refresh_token&refresh_token=${authToken.refresh_token}&client_id=${GOOGLE_API_CLIENT_ID}&client_secret=${GOOGLE_API_CLIENT_SECRET}`
     })
-    settings.settingsStorage.setItem('debugState1', 'calling refreshToken3')
+    setSetting('debugState1', 'calling refreshToken3');
     const dat = (typeof data == 'string') ? JSON.parse(data) : data
     authToken.access_token = dat.access_token
     let d = new Date();
     d.setTime(d.getTime() + dat.expires_in * 1000)
     authToken.requested_date = new Date()
     authToken.expiry_date = d
-    settings.settingsStorage.setItem('debugState1', 'calling refreshToken4')
-    settings.settingsStorage.setItem('tokenAuth', JSON.stringify(authToken))
+    setSetting('debugState1', 'calling refreshToken4');
+    setSetting('tokenAuth', authToken);
     return authToken
 }
 

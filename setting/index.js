@@ -45,18 +45,29 @@ AppSettingsPage({
         const testApiButton = Button({
             label: 'Test Google API',
             onClick: () => {
+                this.state.props.settingsStorage.setItem('apiCallResult', JSON.stringify({error: {code: 666}}));
                 this.state.props.settingsStorage.setItem('LISTS', 123)
             }
         })
         const removeTokenButton = Button({
             label: 'Remove API Token',
             onClick: () => {
+                this.state.props.settingsStorage.setItem('apiCallResult', JSON.stringify({error: {code: 667}}));
                 this.state.props.settingsStorage.setItem('tokenAuth', '{}')
             }
         })
-        const googleimg = Image({src: 'https://developers.google.com/identity/sign-in/g-normal.png', style: {marginRight: '10px'}});
+        const googleimg = Image({
+            src: 'https://developers.google.com/identity/sign-in/g-normal.png',
+            style: {marginRight: '10px'}
+        });
         const signinbutton = Button({
-            label: View({style: {display: 'flex', alignItems: 'center', fontWeight: '600'}}, [googleimg, t('Sign in with Google')]),
+            label: View({
+                style: {
+                    display: 'flex',
+                    alignItems: 'center',
+                    fontWeight: '600'
+                }
+            }, [googleimg, t('Sign in with Google')]),
             style: {backgroundColor: 'white', color: '#444'}
         });
         const auth = Auth({
@@ -78,6 +89,8 @@ AppSettingsPage({
                 token.expiry_date = d
                 this.state.props.settingsStorage.setItem('tokenAuth', JSON.stringify(token))
                 console.log(props)
+                this.state.props.settingsStorage.setItem('apiCallResult', JSON.stringify({error: {code: 666}}));
+                this.state.props.settingsStorage.setItem('LISTS', 123)
             },
             onReturn: async (ret) => {
                 console.log(ret);
@@ -87,6 +100,8 @@ AppSettingsPage({
                 token.requested_date = new Date()
                 token.expiry_date = d
                 this.state.props.settingsStorage.setItem('tokenAuth', JSON.stringify(token))
+                this.state.props.settingsStorage.setItem('apiCallResult', JSON.stringify({error: {code: 666}}));
+                this.state.props.settingsStorage.setItem('LISTS', 123)
             }
         });
         const enableDebug = Toggle({label: 'enable debug', settingsKey: 'debug_enabled'});
@@ -101,13 +116,34 @@ AppSettingsPage({
             debug && tb('Api call debug:'),
             debug && t(this.settingAsString('apiCallDebug'), s),
             tb('Last api call:'),
-            t(this.settingAsString('apiCallResult'), s),
+            t(this.parseLastApiCall(debug), s),
             debug && tb('Debug1:'),
             debug && t(this.settingAsString('debugState1'), s),
             debug && tb('Debug2:'),
             debug && t(this.settingAsString('debugState2'), s),
             enableDebug
         ])
+    },
+    parseLastApiCall(debug) {
+        let o = this.state.props.settingsStorage.getItem('apiCallResult');
+        if (!debug) {
+            let response = o;
+            try {
+                response = typeof o == 'object' ? o : JSON.parse(o);
+            } catch (e) {
+                console.error('error when parsing!' + response);
+            }
+            if (response?.error?.code === 401 || response?.error?.code === 403) {
+                return "Unauthorized!"
+            } else if (response?.error?.code === 666) {
+                return "Test started"
+            } else if (response?.error?.code === 667) {
+                return "Api token removed"
+            } else {
+                return "Authorized successfully";
+            }
+        }
+        return typeof o == 'object' ? JSON.stringify(o) : o;
     },
     settingAsString(name) {
         let o = this.state.props.settingsStorage.getItem(name);
