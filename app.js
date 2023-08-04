@@ -25,6 +25,7 @@ App({
     messageBuilder.connect();
     kpay.init();
     logger.log('kpay license: ' + kpay.isLicensed())
+    hmApp.setScreenKeep(true);
     if (!kpay.isLicensed()) {
       const timer1 = timer.createTimer(
           5000,
