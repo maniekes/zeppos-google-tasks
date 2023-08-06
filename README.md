@@ -1,6 +1,8 @@
 # Google Tasks integration app
 Bonjour! this app will allow you to manage your google tasks from your watch.
 
+for more detailed description check official website: https://apps.klimonda.pl/gtasts
+
 > **Warning**
 > Before first use - go to settings and click `Click here to authorize`.
 
